@@ -24,7 +24,8 @@ router.post("/chat", async (req, res) => {
     const response = await geminiApiCall(message);
     thread.messages.push({ role: "model", content: response })
     thread.updatedAt=new Date();
-    res.status(200).json();
+    await thread.save(); 
+    res.status(200).json(response);
   } catch (e) {
     console.error("Gemini API Error:", e.message);
     res.status(500).json({ message: "Error connecting to Gemini API Or Internal Server Error" });
@@ -65,7 +66,7 @@ router.delete("/thread/:threadId", async (req, res) => {
     if (!deletedThread) {
       return res.status(404).json({ message: "Thread not found" });
     }
-    res.status(200).json({ message: "Thread deleted", thread: deletedThread });
+    res.status(200).json({ message: "Thread was deleted"});
   } catch (error) {
     console.error("Error deleting thread:", error);
     res.status(500).json({ message: "Internal Server Error" });

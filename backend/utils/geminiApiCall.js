@@ -12,20 +12,6 @@ const geminiApiCall = async (message) => {
           role:"user",
           parts:[ {text:`${message}` }]
         }]
-    //   contents: [
-    // {
-    //   role: "user",
-    //   parts: [{ text: "messi or ronaldo" }]
-    // },
-    // {
-    //   role: "model",
-    //   parts: [{ text: "ronaldo" }]
-    // },
-    // {
-    //   role: "user",
-    //   parts: [{ text: "why? tell me in one word that hes the goat" }]
-    // }
-  //]
 },
       {
         headers: {

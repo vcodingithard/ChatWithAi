@@ -4,11 +4,13 @@ import chatRoutes from "./routes/chat.js";
 import cors from "cors"
 import mongoose from 'mongoose';
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// mongoose.connect(process.env)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Connected to Mongo Atlas!')).catch(()=>console.log("Could not connect with the database"));
+
+
 // Middleware
 app.use(express.json()); // to parse JSON bodies
 app.use(cors())
