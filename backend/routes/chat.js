@@ -4,12 +4,30 @@ import Thread from "../model/Thread.js";
 const router = express.Router();
 
 router.post("/chat", async (req, res) => {
+  const { threadId, message } = req.body;
+  if (!threadId || !message) {
+    res.status(400).json("invalid input");
+  }
   try {
-    const response = await geminiApiCall(req.body.message);
-    res.status(200).json(response);
+    let thread = await Thread.findOne({ threadId }); // use findOne instead of find for single doc
+
+    if (!thread) {
+      thread = new Thread({
+        threadId,
+        messages: [{ role: "user", content: message }], // make messages an array
+        title: message,
+      });
+      await thread.save();
+    }else{
+      thread.messages.push({ role: "user", content: message })
+    }
+    const response = await geminiApiCall(message);
+    thread.messages.push({ role: "model", content: response })
+    thread.updatedAt=new Date();
+    res.status(200).json();
   } catch (e) {
     console.error("Gemini API Error:", e.message);
-    res.status(500).json({ message: "Error connecting to Gemini API" });
+    res.status(500).json({ message: "Error connecting to Gemini API Or Internal Server Error" });
   }
 });
 
@@ -26,11 +44,10 @@ router.get("/thread", async (req, res) => {
   }
 });
 
-
 router.get("/thread/:threadId", async (req, res) => {
   try {
     const { threadId } = req.params;
-    const thread = await Thread.findOne({threadId:threadId});
+    const thread = await Thread.findOne({ threadId: threadId });
     if (!thread) {
       return res.status(404).json({ message: "Thread not found" });
     }
@@ -41,11 +58,10 @@ router.get("/thread/:threadId", async (req, res) => {
   }
 });
 
-
 router.delete("/thread/:threadId", async (req, res) => {
   try {
     const { threadId } = req.params;
-    const deletedThread = await Thread.findOneAndDelete({threadId:threadId});
+    const deletedThread = await Thread.findOneAndDelete({ threadId: threadId });
     if (!deletedThread) {
       return res.status(404).json({ message: "Thread not found" });
     }
