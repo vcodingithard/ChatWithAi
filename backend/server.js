@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to Mongo Atlas!')).catch(()=>console.log("Could not connect with the database"));
+  .then(() => console.log('Connected to Mongo Atlas!')).catch((err)=>console.log("Could not connect with the database",err.message));
 
 
 // Middleware

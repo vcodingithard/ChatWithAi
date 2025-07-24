@@ -31,12 +31,15 @@ input{
     background: rgba(255,255,255, 0.05);
     border: none;
 }
+
+.submit:hover{
+    transform: scale(0.9);
+}
 footer{
     justify-self: flex-end;
     font-size: small;
     opacity: 0.6;
     text-align:center ;
     width: 100%;
-    
     border-top: 1px solid rgba(255,255,255, 0.15) ;
 }
