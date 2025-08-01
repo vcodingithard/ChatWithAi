@@ -14,14 +14,17 @@
     border-bottom: 1px solid rgba(255,255,255, 0.15);
 }
 .input{
-    flex: 1;
+    justify-self: flex-end;
     display: flex;
     align-items: flex-end;
+    z-index: 4;
+    height: fit-content;
 }
 .input form{
     width: 100%;
     text-align: center;
     padding: 1rem;
+    background-color: red;
 }
 input{
     height: 3rem;
@@ -38,8 +41,18 @@ input{
 footer{
     justify-self: flex-end;
     font-size: small;
-    opacity: 0.6;
-    text-align:center ;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 100%;
+    padding: 1rem;
     border-top: 1px solid rgba(255,255,255, 0.15) ;
+}
+.opacity{
+    opacity: 0.5;
+}
+.chatStyling{
+    background-color: red;
+    color: black;
 }

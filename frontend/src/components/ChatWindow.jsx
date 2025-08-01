@@ -11,7 +11,7 @@ function ChatWindow() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    flex:"1"
+    flex: "1",
   };
 
   const handleSubmit = async (event) => {
@@ -53,9 +53,10 @@ function ChatWindow() {
         </button>
         <i style={{ marginRight: "1rem" }} className="fa fa-user"></i>
       </div>
-      <Chat />
+      <Chat className="chatStyling" />
       <ScaleLoader cssOverride={override} color="white" loading={load} />
-      <div className="input">
+
+      <footer>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -68,10 +69,7 @@ function ChatWindow() {
             <i className="submit fa fa-paper-plane"></i>
           </button>
         </form>
-      </div>
-
-      <footer>
-        <p>Doggpt can make mistakes and is not 100% percent right</p>
+        <p className="opacity">Doggpt can make mistakes and is not 100% percent right</p>
       </footer>
     </div>
   );
