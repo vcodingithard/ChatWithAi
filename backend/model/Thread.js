@@ -25,6 +25,7 @@ const threadSchema=new mongoose.Schema({
         type:String,
         required:true,
         unique:true,
+        default:"",
     },
     messages:[messageASchema],
     createdAt:{

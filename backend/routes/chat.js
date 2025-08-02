@@ -15,15 +15,18 @@ router.post("/chat", async (req, res) => {
       thread = new Thread({
         threadId,
         messages: [{ role: "user", content: message }], // make messages an array
-        title: message,
+        
       });
       await thread.save();
     }else{
       thread.messages.push({ role: "user", content: message })
     }
     const response = await geminiApiCall(message);
-    thread.messages.push({ role: "model", content: response })
+    thread.messages.push({ role: "model", content: response.response })
     thread.updatedAt=new Date();
+    if (thread.title === "") {
+      thread.title = response.title;
+    } 
     await thread.save(); 
     res.status(200).json(response);
   } catch (e) {
