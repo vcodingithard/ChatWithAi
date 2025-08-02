@@ -21,7 +21,7 @@ app.use("/api", chatRoutes);
 
 // Health check route (optional)
 app.get("/", (req, res) => {
-  res.send("Server is running ✅");
+  res.json("Server is running");
 });
 
 // Start the server

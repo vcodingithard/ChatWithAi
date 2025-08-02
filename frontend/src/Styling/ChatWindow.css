@@ -24,7 +24,6 @@
     width: 100%;
     text-align: center;
     padding: 1rem;
-    background-color: red;
 }
 input{
     height: 3rem;
@@ -53,6 +52,5 @@ footer{
     opacity: 0.5;
 }
 .chatStyling{
-    background-color: red;
     color: black;
 }
