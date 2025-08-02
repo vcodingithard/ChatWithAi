@@ -58,14 +58,14 @@ function ChatWindow() {
 
       <footer>
         <form onSubmit={handleSubmit}>
-          <input
+          <textarea
             type="text"
             placeholder="Ask anything"
             value={promt}
             onChange={(e) => setPromt(e.target.value)}
             // onKeyDown={(e)=>e.key==enter?handleSubmit:}
           />
-          <button type="submit" style={{ fontSize: "larger" }}>
+          <button type="submit" style={{ fontSize: "1.5rem" }}>
             <i className="submit fa fa-paper-plane"></i>
           </button>
         </form>
