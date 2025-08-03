@@ -8,6 +8,9 @@ function App() {
   const [promt,setPromt]=useState("");
   const [reply,setReply]=useState(null);
   const [threadId,setThreadId]=useState(uuidv4());
+  const [prevChats, setPrevChats] = useState([]);
+  const [newChat,setNewChats]=useState(true);
+
   const providerValues = {
     promt,
     setPromt,
@@ -15,10 +18,14 @@ function App() {
     setReply,
     threadId,
     setThreadId,
+    prevChats,
+    setPrevChats,
+    newChat,
+    setNewChats
   };
   return (
     <div className="app">
-      <myContext.Provider value={providerValues}>
+    <myContext.Provider value={providerValues}>
       <Sidebar />
       <ChatWindow />
     </myContext.Provider>
