@@ -4,36 +4,45 @@ import Thread from "../model/Thread.js";
 const router = express.Router();
 
 router.post("/chat", async (req, res) => {
-  const { threadId, message } = req.body;
-  if (!threadId || !message) {
-    res.status(400).json("invalid input");
+  let {threadId, message} = req.body;
+
+  if (!threadId || !message || message.trim() === "") {
+    return res.status(400).json("Invalid Input");
   }
+
   try {
-    let thread = await Thread.findOne({ threadId }); // use findOne instead of find for single doc
+    let thread = await Thread.findOne({ threadId });
+    const response = await geminiApiCall(message);
+
+    if (!response || !response.response || !response.title) {
+      return res.status(500).json({ message: "Gemini failed to return response" });
+    }
 
     if (!thread) {
       thread = new Thread({
-        threadId,
-        messages: [{ role: "user", content: message }], // make messages an array
-        
+        threadId: threadId,
+        title: response.title,
+        messages: [
+          { role: "user", content: message },
+          { role: "model", content: response.response }
+        ],
+        updatedAt: new Date()
       });
-      await thread.save();
-    }else{
-      thread.messages.push({ role: "user", content: message })
+    } else {
+      thread.messages.push({ role: "user", content: message });
+      thread.messages.push({ role: "model", content: response.response });
+      thread.updatedAt = new Date();
     }
-    const response = await geminiApiCall(message);
-    thread.messages.push({ role: "model", content: response.response })
-    thread.updatedAt=new Date();
-    if (thread.title === "") {
-      thread.title = response.title;
-    } 
-    await thread.save(); 
+
+    await thread.save();
     res.status(200).json(response);
+
   } catch (e) {
     console.error("Gemini API Error:", e.message);
-    res.status(500).json({ message: "Error connecting to Gemini API Or Internal Server Error" });
+      res.status(500).json({ message: "Error connecting to Gemini API or saving thread" });
   }
 });
+
 
 router.get("/thread", async (req, res) => {
   try {

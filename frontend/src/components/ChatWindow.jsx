@@ -6,7 +6,7 @@ import { ScaleLoader } from "react-spinners";
 function ChatWindow() {
   const [load, setLoad] = useState(false);
   const { promt, setPromt, reply, setReply, threadId } = useContext(myContext);
-
+  //the Scaleloader css 
   const override = {
     display: "flex",
     justifyContent: "center",
@@ -15,8 +15,8 @@ function ChatWindow() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const options = {
+    event.preventDefault();//to prevent the default behavior of the html form 
+    const options = {//options object to specify fetch
       method: "POST",
       headers: {
         "Content-Type": "application/json",
