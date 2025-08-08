@@ -5,16 +5,14 @@ const router = express.Router();
 
 router.post("/chat", async (req, res) => {
   let {threadId, message} = req.body;
-
   if (!threadId || !message || message.trim() === "") {
     return res.status(400).json("Invalid Input");
   }
-
   try {
     let thread = await Thread.findOne({ threadId });
-    const response = await geminiApiCall(message);
+    const response = await geminiApiCall(message,thread);
 
-    if (!response || !response.response || !response.title) {
+    if (!response || !response.response) {
       return res.status(500).json({ message: "Gemini failed to return response" });
     }
 
