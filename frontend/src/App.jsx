@@ -3,16 +3,15 @@ import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
 import { myContext } from "./MyContext";
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
-
+import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-  const [promt,setPromt]=useState("");
-  const [reply,setReply]=useState(null);
-  const [threadId,setThreadId]=useState(uuidv4());
+  const [promt, setPromt] = useState("");
+  const [reply, setReply] = useState(null);
+  const [threadId, setThreadId] = useState("");
   const [prevChats, setPrevChats] = useState([]);
-  const [newChat,setNewChats]=useState(true);
-
+  const [allChats, setAllChats] = useState([]);
+  const [newChat,setNewChat]=useState(false)
   const providerValues = {
     promt,
     setPromt,
@@ -22,15 +21,25 @@ function App() {
     setThreadId,
     prevChats,
     setPrevChats,
+    allChats,
+    setAllChats,
     newChat,
-    setNewChats
+    setNewChat,
+
   };
+
   return (
     <div className="app">
-    <myContext.Provider value={providerValues}>
-      <Sidebar />
-      <ChatWindow />
-    </myContext.Provider>
+      <myContext.Provider value={providerValues}>
+        <Sidebar />
+        <Routes>
+          <Route
+            path="/"
+            element={<Navigate to={`/chat/${threadId}`} />}
+          />
+          <Route path="/chat/:Id" element={<ChatWindow />} />
+        </Routes>
+      </myContext.Provider>
     </div>
   );
 }

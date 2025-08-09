@@ -1,12 +1,15 @@
 import { useContext, useState } from "react";
+import { useParams } from "react-router-dom";
 import { myContext } from "../MyContext";
 import "../Styling/ChatWindow.css";
 import Chat from "./Chat";
 import { ScaleLoader } from "react-spinners";
+
 function ChatWindow() {
   const [load, setLoad] = useState(false);
-  const { promt, setPromt, reply, setReply, threadId } = useContext(myContext);
-  //the Scaleloader css 
+  const { promt, setPromt, reply, setReply, threadId, setThreadId,setNewChat } =useContext(myContext);
+  const { Id} = useParams(); 
+  
   const override = {
     display: "flex",
     justifyContent: "center",
@@ -15,23 +18,21 @@ function ChatWindow() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();//to prevent the default behavior of the html form 
-    const options = {//options object to specify fetch
+    event.preventDefault();
+    const options = {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: promt,
-        threadId: threadId,
+        threadId: Id||threadId,
       }),
     };
     setLoad(true);
     try {
       const response = await fetch("http://localhost:3000/api/chat", options);
       const data = await response.json();
-      console.log(data);
       setReply(data);
+      setNewChat(true)
       setPromt("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -53,7 +54,8 @@ function ChatWindow() {
         </button>
         <i style={{ marginRight: "1rem" }} className="fa fa-user"></i>
       </div>
-      <Chat className="chatStyling" />
+
+      <Chat className="chatStyling" threadId={Id} />
       <ScaleLoader cssOverride={override} color="white" loading={load} />
 
       <footer>
@@ -63,13 +65,14 @@ function ChatWindow() {
             placeholder="Ask anything"
             value={promt}
             onChange={(e) => setPromt(e.target.value)}
-            // onKeyDown={(e)=>e.key==enter?handleSubmit:}
           />
           <button type="submit" style={{ fontSize: "1.5rem" }}>
             <i className="submit fa fa-paper-plane"></i>
           </button>
         </form>
-        <p className="opacity">Doggpt can make mistakes and is not 100% percent right</p>
+        <p className="opacity">
+          Doggpt can make mistakes and is not 100% percent right
+        </p>
       </footer>
     </div>
   );

@@ -6,4 +6,49 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+
+}
+.chats{
+    width: 700px;
+    flex:1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+.userdiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: end;
+    font-size: 1rem;
+    text-align: end;
+}
+.gptdiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: flex-start;
+    font-size: 1rem;
+    max-width: 500px;
+    margin-left: 0;
+    text-align: start;
+}
+.usermessage{
+    background-color:#323232 ;
+    padding:1rem 2rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: fit-content;
+}
+.gptmessage{
+    padding:1rem 0;
+    width: fit-content;
+}
+h1{
+    flex:1;
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
