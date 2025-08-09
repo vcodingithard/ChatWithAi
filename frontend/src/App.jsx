@@ -12,6 +12,8 @@ function App() {
   const [prevChats, setPrevChats] = useState([]);
   const [allChats, setAllChats] = useState([]);
   const [newChat,setNewChat]=useState(false)
+  const [newThread,setNewThread]=useState(false)
+  const [handleNewThread,setHandleNewThread]=useState(false)
   const providerValues = {
     promt,
     setPromt,
@@ -25,7 +27,10 @@ function App() {
     setAllChats,
     newChat,
     setNewChat,
-
+    newThread,
+    setNewThread,
+    handleNewThread,
+    setHandleNewThread
   };
 
   return (

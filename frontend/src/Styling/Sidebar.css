@@ -9,6 +9,7 @@
 }
 
 .icon {
+  align-self: flex-start;
   display: flex;
   justify-content: space-between;
   padding: 1rem;
@@ -22,13 +23,20 @@
   font-size: medium;
   margin: 0 1rem;
   padding: 1rem;
-  flex-grow: 1;
+  flex: 1;
   overflow-y: auto;
+  z-index: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 
 .allchats {
+
   display: flex;
   flex-direction: column;
+
+  flex: 1;
+  overflow-y: auto;
 }
 
 .chat {
@@ -44,6 +52,7 @@
 }
 
 .account {
+  align-self: flex-end;
   border-top: 2px solid rgba(255, 255, 255, 0.2);
   position: absolute;
   height: 10vh;
@@ -54,6 +63,8 @@
   justify-content: flex-start;
   align-items: center;
   font-size: medium;
+  z-index: 1000;
+  background-color: #171717;
 }
 .profile {
   height: 2rem;
@@ -75,4 +86,23 @@ button {
   border: none;
   font-size: medium;
   color: white;
+}
+/* For WebKit browsers */
+.history::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.history::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }

@@ -4,17 +4,25 @@ import { useContext } from "react";
 import "../Styling/Chat.css"
 import axios from "axios";
 const Chat = ({threadId}) => {
-  let {   prevChats, setPrevChats,newChat,setNewChat } = useContext(myContext);
+  let {   prevChats, setPrevChats,newChat,setNewChat,setNewThread,newThread,setHandleNewThread } = useContext(myContext);
 
   useEffect(() => {
     const fetchChats = async () => {
-      try {
+    if (newThread) {
+      setPrevChats([]);
+      setNewThread(false)    
+      return;               
+    }
+    else{
+      try{
         const response = await axios.get(`http://localhost:3000/api/thread/${threadId}`);
         setPrevChats(response.data.messages)
         setNewChat(false)
+        setHandleNewThread(false)
       } catch (e) {
         console.log("Error", e)
       }
+    }
     }
 
     fetchChats();

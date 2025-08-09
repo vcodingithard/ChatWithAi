@@ -8,14 +8,17 @@ import { Link,useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 function Sidebar() {
-  const { allChats, setAllChats,threadId, setThreadId, } = useContext(myContext);
+  const { allChats, setAllChats,threadId, setThreadId,setNewThread,newThread,handleNewThread,setHandleNewThread } = useContext(myContext);
   const navigate = useNavigate();
+
   const handleNewChat =async () => {
     const newId = uuidv4();
     setThreadId(newId);
-
+    setNewThread(true);
+    setHandleNewThread(true)
     navigate(`/chat/${newId}`);
   };
+
   useEffect(() => {
     async function fetchThreads() {
       try {
@@ -26,7 +29,7 @@ function Sidebar() {
       }
     }
     fetchThreads();
-  }, []);
+  }, [handleNewThread]);
 
   return (
     <div className="sidebar">
