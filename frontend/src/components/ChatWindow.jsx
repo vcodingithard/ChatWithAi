@@ -14,7 +14,7 @@ function ChatWindow() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    flex: "1",
+    height:"fit-contnent",
   };
 
   const handleSubmit = async (event) => {

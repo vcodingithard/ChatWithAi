@@ -23,17 +23,21 @@ const geminiApiCall = async (message, thread) => {
     // Construct the prompt that will be sent to Gemini
     // On first message, also request a short title in the response
     const prompt = `
-      ${!isFirstMessage ? `Previous conversation:\n${formattedThread}\n` : ""}
-      User message: "${message}"
-      Respond to the user.
-      ${isFirstMessage ? " Also give a 2-3 word title summarizing the topic." : ""}
+${!isFirstMessage ? `Previous conversation:\n${formattedThread}\n` : ""}
+User message: "${message}"
 
-      Respond in this JSON format:
-      {
-        ${isFirstMessage ? `"title": "<short title>",` : ""}
-        "response": "<detailed response>"
-      }
-    `;
+Please respond in a friendly, conversational, and helpful manner just like ChatGPT would. 
+Keep your reply simple, professional.
+Answer exactly what is asked without unnecessary detail.
+
+${isFirstMessage ? "Also provide a 2-3 word title summarizing the topic." : ""}
+
+Respond strictly in this JSON format:
+{
+  ${isFirstMessage ? `"title": "<short title>",` : ""}
+  "response": "<your detailed and crisp response>"
+}
+`;
 
     // Send POST request to Gemini API
     const response = await axios.post(
