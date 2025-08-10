@@ -7,7 +7,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 function App() {
   const [promt, setPromt] = useState("");
-  const [reply, setReply] = useState(null);
   const [threadId, setThreadId] = useState(uuidv4());
   const [prevChats, setPrevChats] = useState([]);//for getting all the previous chats 
   const [allChats, setAllChats] = useState([]);//for getting all the threads
@@ -17,8 +16,6 @@ function App() {
   const providerValues = {
     promt,
     setPromt,
-    reply,
-    setReply,
     threadId,
     setThreadId,
     prevChats,
