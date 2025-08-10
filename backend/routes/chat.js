@@ -46,7 +46,7 @@ router.get("/thread", async (req, res) => {
   try {
     const threads = await Thread.find().sort({ updatedAt: -1 });
     if (!threads || threads.length === 0) {
-      return res.status(404).json({ message: "No threads found" });
+      return res.status(200).json({ message: "No threads found" });
     }
     res.status(200).json(threads);
   } catch (error) {
@@ -60,7 +60,7 @@ router.get("/thread/:threadId", async (req, res) => {
     const { threadId } = req.params;
     const thread = await Thread.findOne({ threadId: threadId });
     if (!thread) {
-      return res.status(404).json({ message: "Thread not found" });
+      return res.status(404).json({message: "Thread not found" });
     }
     res.status(200).json(thread);
   } catch (error) {

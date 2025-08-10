@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState,useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { myContext } from "../MyContext";
 import "../Styling/ChatWindow.css";
@@ -6,15 +6,20 @@ import Chat from "./Chat";
 import { ScaleLoader } from "react-spinners";
 
 function ChatWindow() {
-  const [load, setLoad] = useState(false);
-  const { promt, setPromt, reply, setReply, threadId, setThreadId,setNewChat } =useContext(myContext);
-  const { Id} = useParams(); 
+  const [load, setLoad] = useState(false);//for scaleLoader
+  const { promt, setPromt, setReply, threadId, setThreadId,setCreateNewThread,setNewChat } = useContext(myContext);
+  const { Id } = useParams();
   
+  useEffect(() => {
+    setThreadId(Id);
+  }, [Id]);
+
+  //styling for the loader
   const override = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height:"fit-contnent",
+    height: "fit-contnent",
   };
 
   const handleSubmit = async (event) => {
@@ -24,7 +29,7 @@ function ChatWindow() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: promt,
-        threadId: Id||threadId,
+        threadId: threadId,
       }),
     };
     setLoad(true);
@@ -32,8 +37,9 @@ function ChatWindow() {
       const response = await fetch("http://localhost:3000/api/chat", options);
       const data = await response.json();
       setReply(data);
-      setNewChat(true)
       setPromt("");
+      setCreateNewThread(false);
+      setNewChat(true)
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -55,7 +61,7 @@ function ChatWindow() {
         <i style={{ marginRight: "1rem" }} className="fa fa-user"></i>
       </div>
 
-      <Chat className="chatStyling" threadId={Id} />
+      <Chat className="chatStyling" />
       <ScaleLoader cssOverride={override} color="white" loading={load} />
 
       <footer>

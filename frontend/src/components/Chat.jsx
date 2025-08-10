@@ -5,43 +5,45 @@ import axios from "axios";
 import rehypeHighlight from "rehype-highlight";
 import Markdown from "react-markdown";
 import ReactMarkdown from "react-markdown";
-const Chat = ({ threadId }) => {
+
+const Chat = () => {
   const {
     prevChats,
     setPrevChats,
+    createNewThread,
+    threadId,
     newChat,
-    setNewChat,
-    setNewThread,
-    newThread,
-    setHandleNewThread,
+    setNewChat
   } = useContext(myContext);
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (newThread) {
-        setPrevChats([]);
-        setNewThread(false);
-        return;
-      } else {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/api/thread/${threadId}`
-          );
+ useEffect(() => {
+  if (createNewThread) {
+    setPrevChats([]);
+    return; 
+  }
+  const fetchChats = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/thread/${threadId}`);
+        if(response.data.message==="Thread not found"){
+          setPrevChats([])
+        }else{
           setPrevChats(response.data.messages);
-          setNewChat(false);
-          setHandleNewThread(false);
-        } catch (e) {
-          console.log("Error", e);
         }
-      }
-    };
+        
+    } catch (e) {
+      console.log("Error", e);
+    }finally{
+      setNewChat(false)
+    }
+  };
 
-    fetchChats();
-  }, [threadId, newChat]);
+  fetchChats();
+}, [threadId,newChat]);
+
 
   return (
     <div className="chatbox">
-      {prevChats.length === 0 ? (
+      {prevChats.length == 0 ? (
         <h1>Start a new Chat</h1>
       ) : (
         <div className="chats">

@@ -8,43 +8,62 @@ import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 function Sidebar() {
-  const { allChats, setAllChats, threadId, setThreadId, setNewThread, newThread, handleNewThread, setHandleNewThread } = useContext(myContext);
+  const { allChats,
+    setAllChats,
+    setThreadId,
+    deleteThread, 
+    setDeleteThread,
+    createNewThread,
+    setCreateNewThread,
+   } = useContext(myContext);
+
   const navigate = useNavigate();
 
-  const handleNewChat = async () => {
+  const  handleThreadCreate = async () => {
     const newId = uuidv4();
     setThreadId(newId);
-    setNewThread(true);
-    setHandleNewThread(true)
+    setCreateNewThread(true); 
     navigate(`/chat/${newId}`);
   };
 
   const handleDelete = async (threadid) => {
     try {
       await axios.delete(`http://localhost:3000/api/thread/${threadid}`);
+      setAllChats(allChats.filter(m => m.threadId !== threadid));
+      setDeleteThread(true)
+      handleThreadCreate();
     } catch (e) {
       console.error("Failed to delete the thread:", e);
     }
   };
 
+  //only  trigger this when the new thread for a new chat has been created
   useEffect(() => {
     async function fetchThreads() {
       try {
         const response = await axios.get("http://localhost:3000/api/thread");
-        setAllChats(response.data);
+        if (response.data.message === "No threads found") {
+          setAllChats([]);
+        } else {
+          setAllChats(response.data);
+        }
       } catch (error) {
         console.error("Failed to fetch threads:", error);
+      } finally {
+        if (deleteThread) setDeleteThread(false); // reset after delete
       }
     }
     fetchThreads();
-  }, [handleNewThread]);
+  }, [deleteThread,createNewThread]);
 
   return (
     <div className="sidebar">
       <div className="icon">
-        <img src="/media/logo.png" alt="Logo" />
+        <Button onClick={handleThreadCreate}>
+          <img src="/media/logo.png" alt="Logo" />
+        </Button>
         <Tooltip title="New Chat" placement="top">
-          <Button onClick={handleNewChat}>
+          <Button onClick={handleThreadCreate}>
             <img src="/media/new chat.png" alt="New Chat" />
           </Button>
         </Tooltip>
@@ -54,10 +73,15 @@ function Sidebar() {
         {allChats.length > 0 ?
           <div className="allchats">
             {allChats.map((m) => (
-              <Link style={{ textDecoration: "none" }} key={m.threadId} to={`/chat/${m.threadId}`} className="chat-link">
+              <Link style={{ textDecoration: "none" }} onClick={()=>{
+                setCreateNewThread(false)
+              }} key={m.threadId} to={`/chat/${m.threadId}`} className="chat-link">
                 <div className="chat">
                   <p>{m.title}</p>
-                  <i className="fa fa-ellipsis-vertical"></i>
+                  <button className="delete" onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete(m.threadId);
+                  }}><i className="fa fa-solid fa-trash"></i></button>
                 </div>
               </Link>
             ))}
