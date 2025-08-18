@@ -1,44 +1,48 @@
 import mongoose from "mongoose"
 
-const messageASchema=new mongoose.Schema({
-    role:{
-        type:String,
-        enum:["user","model"],
-        required:true,
+const messageASchema = new mongoose.Schema({
+    role: {
+        type: String,
+        enum: ["user", "model"],
+        required: true,
     },
-    content:{
-        type:String,
-        required:true,
+    content: {
+        type: String,
+        required: true,
     },
-    timeStamp:{
-        type:Date,
-        default:Date.now,
+    timeStamp: {
+        type: Date,
+        default: Date.now,
     }
 })
 
-const threadSchema=new mongoose.Schema({
-    threadId:{
-        type:String,
-        required:true,
+const threadSchema = new mongoose.Schema({
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
-    title:{
-        type:String,
-        required:true,
-        unique:true,
-        default:"",
+    threadId: {
+        type: String,
+        required: true,
     },
-    messages:[messageASchema],
-    createdAt:{
-        type:Date,
-        default:Date.now,
+    title: {
+        type: String,
+        required: true,
+        unique: true,
+        default: "",
+    },
+    messages: [messageASchema],
+    createdAt: {
+        type: Date,
+        default: Date.now,
 
     },
-     updatedAt:{
-        type:Date,
-        default:Date.now,
-        
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+
     }
 })
 
-const Thread =mongoose.model("Thread",threadSchema);
+const Thread = mongoose.model("Thread", threadSchema);
 export default Thread;
