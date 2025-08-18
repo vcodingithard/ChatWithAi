@@ -3,10 +3,12 @@ import passport from "passport";
 import User from "../model/User.js";
 
 const router = express.Router();
-router.get("/",async(req,res)=>{
-    let users=await User.find();
-    res.status(200).json(users)
+
+router.get("/", async (req, res) => {
+  let users = await User.find();
+  res.status(200).json(users)
 })
+
 // Register
 router.post("/register", async (req, res) => {
   const { name, email, phoneNumber, password } = req.body;
@@ -20,18 +22,17 @@ router.post("/register", async (req, res) => {
 });
 
 // Login
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) return res.status(400).json({ message: info.message });
-
-    // Establish a session
-    req.login(user, (err) => {
-      if (err) return next(err);
-      return res.json({ message: "Login successful", user: { id: user._id, email: user.email, name: user.name } });
+router.post("/login",passport.authenticate("local", { failureMessage: "Invalid email or password" }),(req, res) => {
+    res.json({
+      message: "Login successful",
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+      },
     });
-  })(req, res, next);
-});
+  }
+);
 
 // Logout
 router.get("/logout", (req, res) => {

@@ -10,11 +10,9 @@ const messageASchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    timeStamp: {
-        type: Date,
-        default: Date.now,
-    }
-})
+    },
+     { timestamps: true }
+)
 
 const threadSchema = new mongoose.Schema({
     owner: {
@@ -32,17 +30,8 @@ const threadSchema = new mongoose.Schema({
         default: "",
     },
     messages: [messageASchema],
-    createdAt: {
-        type: Date,
-        default: Date.now,
-
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-
-    }
-})
+},
+{timestamps:true})
 
 const Thread = mongoose.model("Thread", threadSchema);
 export default Thread;
