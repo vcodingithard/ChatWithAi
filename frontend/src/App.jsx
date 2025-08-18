@@ -1,18 +1,24 @@
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 import { myContext } from "./MyContext";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import axios from "axios";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+
 function App() {
   const [promt, setPromt] = useState("");
   const [threadId, setThreadId] = useState(uuidv4());
-  const [prevChats, setPrevChats] = useState([]);//for getting all the previous chats 
-  const [allChats, setAllChats] = useState([]);//for getting all the threads
-  const [createNewThread,setCreateNewThread]=useState(false)
+  const [prevChats, setPrevChats] = useState([]); //for getting all the previous chats 
+  const [allChats, setAllChats] = useState([]); //for getting all the threads
+  const [createNewThread, setCreateNewThread] = useState(false);
   const [deleteThread, setDeleteThread] = useState(false);
-  const [newChat,setNewChat]=useState(false)
+  const [newChat, setNewChat] = useState(false);
+  const [user, setUser] = useState(null);
+
   const providerValues = {
     promt,
     setPromt,
@@ -22,26 +28,43 @@ function App() {
     setPrevChats,
     allChats,
     setAllChats,
-    deleteThread, 
+    deleteThread,
     setDeleteThread,
     createNewThread,
     setCreateNewThread,
     newChat,
-    setNewChat
+    setNewChat,
+    user,
+    setUser,
   };
-
+  useEffect(() => {
+  axios.get("http://localhost:3000/api/user/me",{ withCredentials: true })
+    .then(res => {
+      setUser(res.data.user);
+    })
+    .catch(() => {
+      setUser(null); // not logged in
+    });
+}, []);
   return (
     <div className="app">
       <myContext.Provider value={providerValues}>
-        <Sidebar />
-        <Routes>
-          <Route
-            path="/"
-            element={<Navigate to={`/chat/${threadId}`} />}
-          />
-          <Route path="/chat" element={<Navigate to={`/chat/${threadId}`} />} />
-          <Route path="/chat/:Id" element={<ChatWindow />} />
-        </Routes>
+        {user ? (
+          <>
+            <Sidebar />
+            <Routes>
+              <Route path="/" element={<Navigate to={`/chat/${threadId}`} />} />
+              <Route path="/chat" element={<Navigate to={`/chat/${threadId}`} />} />
+              <Route path="/chat/:Id" element={<ChatWindow />} />
+            </Routes>
+          </>
+        ) : (
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="*" element={<Navigate to= "/login"></Navigate>} />
+          </Routes>
+        )}
       </myContext.Provider>
     </div>
   );
