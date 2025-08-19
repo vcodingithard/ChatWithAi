@@ -28,7 +28,7 @@ const Chat = () => {
     const fetchChats = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/thread/${threadId}`
+          `http://localhost:3000/api/thread/${threadId}`,{ withCredentials: true }
         );
         if (response.data.message === "Thread not found") {
           setPrevChats([]);

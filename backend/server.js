@@ -23,7 +23,11 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Body parsers and CORS BEFORE session and passport
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -31,7 +35,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, ttl: 60*60*24*14 }),
-  cookie: { maxAge: 1000*60*60*24*14, httpOnly: true, sameSite: "lax" },
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 14,
+    httpOnly: true,
+    sameSite: "lax", 
+    secure: false,
+  },
 }));
 
 app.use(passport.initialize());

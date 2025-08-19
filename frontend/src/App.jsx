@@ -4,7 +4,7 @@ import ChatWindow from "./components/ChatWindow";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { myContext } from "./MyContext";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -17,7 +17,9 @@ function App() {
   const [createNewThread, setCreateNewThread] = useState(false);
   const [deleteThread, setDeleteThread] = useState(false);
   const [newChat, setNewChat] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
+
+  const [loading, setLoading] = useState(true);
 
   const providerValues = {
     promt,
@@ -38,18 +40,27 @@ function App() {
     setUser,
   };
   useEffect(() => {
-  axios.get("http://localhost:3000/api/user/me",{ withCredentials: true })
-    .then(res => {
-      setUser(res.data.user);
-    })
-    .catch(() => {
-      setUser(null); // not logged in
-    });
-}, []);
+    axios.get("http://localhost:3000/api/user/me", { withCredentials: true })
+      .then(res => {
+        console.log(res.data.user)
+        setUser(res.data.user);
+      })
+      .catch(() => {
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
   return (
     <div className="app">
       <myContext.Provider value={providerValues}>
-        {user ? (
+        {loading ? (
+          <div className="spinner-container">
+            <div className="spinner"></div>
+          </div>
+
+        ) : user ? (
           <>
             <Sidebar />
             <Routes>
@@ -62,10 +73,11 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to= "/login"></Navigate>} />
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         )}
       </myContext.Provider>
+
     </div>
   );
 }

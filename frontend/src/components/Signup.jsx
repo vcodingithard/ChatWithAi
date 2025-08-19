@@ -39,7 +39,9 @@ export default function Signup() {
     };
 
     try {
-      let res = await axios.post("http://localhost:3000/api/user/signup", input);
+      let res = await axios.post("http://localhost:3000/api/user/signup", input, {
+    withCredentials: true, 
+  });
       setUser(res.data.user); 
       console.log("Signup success:", res.data.user);
       navigate(`/chat`);

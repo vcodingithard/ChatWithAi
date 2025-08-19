@@ -28,7 +28,7 @@ function Sidebar() {
 
   const handleDelete = async (threadid) => {
     try {
-      await axios.delete(`http://localhost:3000/api/thread/${threadid}`);
+      await axios.delete(`http://localhost:3000/api/thread/${threadid}`,{withCredentials:true});
       setAllChats(allChats.filter(m => m.threadId !== threadid));
       setDeleteThread(true)
       handleThreadCreate();
@@ -41,7 +41,7 @@ function Sidebar() {
   useEffect(() => {
     async function fetchThreads() {
       try {
-        const response = await axios.get("http://localhost:3000/api/thread");
+        const response = await axios.get("http://localhost:3000/api/thread",{withCredentials:true});
         if (response.data.message === "No threads found") {
           setAllChats([]);
         } else {

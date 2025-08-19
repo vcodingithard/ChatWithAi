@@ -4,8 +4,17 @@ import User from "../model/User.js";
 
 const router = express.Router();
 
-router.get("/me", (req, res) => {
+export const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
+    console.log(req.user_id);
+    return next(); 
+  } else {
+    return res.status(401).json({ message: "Not authenticated" }); 
+  }
+};
+
+
+router.get("/me",isAuthenticated, (req, res) => { 
     res.json({
       user: {
         id: req.user._id,
@@ -14,19 +23,6 @@ router.get("/me", (req, res) => {
         phoneNumber: req.user.phoneNumber,
       },
     });
-  } else {
-    res.status(401).json({ message: "Not authenticated" });
-  }
-});
-
-// Get all users (for debugging/admin)
-router.get("/", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
 });
 
 // ========================

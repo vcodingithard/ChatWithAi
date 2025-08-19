@@ -31,7 +31,9 @@ const navigate = useNavigate();
       email:formData.email,
       password:formData.password,
     }
-    let response=await axios.post("http://localhost:3000/api/user/login",input); 
+    let response=await axios.post("http://localhost:3000/api/user/login",input, {
+    withCredentials: true, 
+  }); 
     setUser(response.data.user);
     navigate(`/chat`);
   }
