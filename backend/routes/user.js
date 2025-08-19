@@ -6,7 +6,6 @@ const router = express.Router();
 
 export const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
-    console.log(req.user_id);
     return next(); 
   } else {
     return res.status(401).json({ message: "Not authenticated" }); 

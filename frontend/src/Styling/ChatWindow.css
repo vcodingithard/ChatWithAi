@@ -13,6 +13,7 @@
     align-items: center;
     width: 100%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    height: 4rem;
 }
 
 form {
@@ -58,4 +59,27 @@ footer {
 
 .chatStyling {
     color: black;
+}
+
+.user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown {
+  position: absolute;
+  top:4rem ;
+  right: 8px;
+  background: white;
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+.dropdown button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: black;
 }

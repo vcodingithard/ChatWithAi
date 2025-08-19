@@ -6,8 +6,11 @@ import axios from "axios";
 import { myContext } from "../MyContext";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 function Sidebar() {
+
+  const [currentThread, setCurrentThread] = useState(null);
   const { allChats,
     setAllChats,
     setThreadId,
@@ -24,6 +27,7 @@ function Sidebar() {
     setThreadId(newId);
     setCreateNewThread(true); 
     navigate(`/chat/${newId}`);
+    setCurrentThread(null)
   };
 
   const handleDelete = async (threadid) => {
@@ -71,10 +75,17 @@ function Sidebar() {
       <div className="history">
         <p style={{ color: "rgba(255, 255, 255, 0.5)" }}>Chats</p>
         {allChats.length > 0 ?
-          <div className="allchats">
+          <div className="allchats" >
             {allChats.map((m) => (
-              <Link style={{ textDecoration: "none" }} onClick={()=>{
-                setCreateNewThread(false)
+              
+              <Link style={{ 
+                textDecoration: "none",
+                marginTop:"1rem",
+                backgroundColor: currentThread === m.threadId ? "rgba(255,255,255,0.2)" : "", 
+                borderRadius:"1rem",
+              }} onClick={()=>{
+                setCreateNewThread(false),
+                setCurrentThread(m.threadId)
               }} key={m.threadId} to={`/chat/${m.threadId}`} className="chat-link">
                 <div className="chat">
                   <p>{m.title}</p>

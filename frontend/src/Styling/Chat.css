@@ -7,7 +7,7 @@
     align-items: center;
     width: 100%;
     height: fit-content;
-    padding-bottom:3rem ;
+    padding:3rem 0 ;
 }
 .chats{
     width: 700px;
@@ -35,7 +35,7 @@
     width: 700px;
     padding: 2rem;
     margin-left: 0;
-    text-align: start;
+    text-align: left;
 }
 .usermessage{
     background-color:#323232 ;
@@ -49,6 +49,7 @@
     border-radius: 1rem;
     max-width: 500px;
     width: fit-content;
+    text-align: left;
 }
 
 h1{

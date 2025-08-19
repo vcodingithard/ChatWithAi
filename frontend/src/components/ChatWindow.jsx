@@ -1,15 +1,19 @@
-import { useContext, useState,useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { myContext } from "../MyContext";
 import "../Styling/ChatWindow.css";
 import Chat from "./Chat";
 import { ScaleLoader } from "react-spinners";
+import axios from "axios";
 
 function ChatWindow() {
+  const navigate = useNavigate();
   const [load, setLoad] = useState(false);//for scaleLoader
-  const { promt, setPromt,  threadId, setThreadId,setCreateNewThread,setNewChat } = useContext(myContext);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const { promt, setPromt, threadId, setThreadId, setCreateNewThread, setNewChat,setUser } = useContext(myContext);
   const { Id } = useParams();
-  
+
   useEffect(() => {
     setThreadId(Id);
   }, [Id]);
@@ -21,6 +25,17 @@ function ChatWindow() {
     alignItems: "center",
     height: "fit-contnent",
   };
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:3000/api/user/logout", { withCredentials: true })
+      setUser(null)
+      navigate("/login");
+
+    } catch (e) {
+      console.log(e.message)
+    }
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -58,7 +73,19 @@ function ChatWindow() {
             ></i>
           </p>
         </button>
-        <i style={{ marginRight: "1rem" }} className="fa fa-user"></i>
+        <i
+          style={{ marginRight: "1rem", cursor: "pointer" }}
+          className="fa fa-user"
+          onClick={() => setMenuOpen((prev) => !prev)}
+        ></i>
+        {menuOpen && (
+          <div className="dropdown">
+            <button className="dropdown-item" onClick={handleLogout}>
+              <i className="fa fa-sign-out" style={{ marginRight: 8,color:"black" }}></i>
+              Logout
+            </button>
+          </div>
+        )}
       </div>
 
       <Chat className="chatStyling" />
