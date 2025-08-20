@@ -4,36 +4,44 @@ import User from "../model/User.js";
 
 const router = express.Router();
 
-export const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
+// ========================
+// Middleware: Check if user is logged in
+// ========================
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) { // Passport adds this helper
     return next(); 
   } else {
     return res.status(401).json({ message: "Not authenticated" }); 
   }
 };
 
-
-router.get("/me",isAuthenticated, (req, res) => { 
-    res.json({
-      user: {
-        id: req.user._id,
-        email: req.user.email,
-        name: req.user.name,
-        phoneNumber: req.user.phoneNumber,
-      },
-    });
+// ========================
+// Get current logged-in user
+// ========================
+router.get("/me", isAuthenticated, (req, res) => { 
+  res.json({
+    user: {
+      id: req.user._id,
+      email: req.user.email,
+      name: req.user.name,
+      phoneNumber: req.user.phoneNumber,
+    },
+  });
 });
 
 // ========================
-// Register
+// Register new user
 // ========================
 router.post("/signup", async (req, res) => {
   const { name, email, phoneNumber, password } = req.body;
   try {
+    // Create a new user object without password
     const user = new User({ name, email, phoneNumber });
-    await User.register(user, password); // passport-local-mongoose handles hashing
 
-    // Optionally log in the user immediately after registration:
+    // passport-local-mongoose adds .register() to handle hashing + saving
+    await User.register(user, password); 
+
+    // Auto-login the user right after signup
     req.login(user, (err) => {
       if (err) {
         return res.status(500).json({ message: "Error logging in after registration" });
@@ -54,10 +62,11 @@ router.post("/signup", async (req, res) => {
 });
 
 // ========================
-// Login
+// Login existing user
 // ========================
-router.post("/login",
-  passport.authenticate("local"),
+router.post(
+  "/login",
+  passport.authenticate("local"), // Passport handles user verification
   (req, res) => {
     res.json({
       message: "Login successful",
@@ -71,12 +80,11 @@ router.post("/login",
   }
 );
 
-
 // ========================
-// Logout
+// Logout current user
 // ========================
 router.get("/logout", (req, res, next) => {
-  req.logout((err) => {
+  req.logout((err) => { // Passport removes req.user and clears session
     if (err) return next(err);
     res.json({ message: "Logged out successfully" });
   });
