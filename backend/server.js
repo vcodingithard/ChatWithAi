@@ -67,8 +67,12 @@ app.use(session({
 // ----------------------
 // - Passport handles user authentication
 // - Using passport-local-mongoose with User model
+
+//Take it from passport npm
 app.use(passport.initialize());
 app.use(passport.session());
+
+//take it from passport-local-mongoose
 passport.use(User.createStrategy());          // Local strategy for login/signup
 passport.serializeUser(User.serializeUser()); // Save user data in session
 passport.deserializeUser(User.deserializeUser()); // Retrieve user from session
