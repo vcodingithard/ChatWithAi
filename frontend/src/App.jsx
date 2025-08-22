@@ -43,7 +43,6 @@ function App() {
   useEffect(() => {
     axios.get("http://localhost:3000/api/user/me", { withCredentials: true })
       .then(res => {
-        console.log(res.data.user)
         setUser(res.data.user);
       })
       .catch(() => {

@@ -9,7 +9,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  let { user, setUser } = useContext(myContext)
+  let {setUser } = useContext(myContext)
 
   let [formData, setFormData] = useState({
     email: "",
