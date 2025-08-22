@@ -1,4 +1,4 @@
-import  { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import "../Styling/auth.css";
@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 export default function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username:"",
+    username: "",
     phno: "",
     email: "",
     password: "",
@@ -29,20 +29,20 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     let input = {
       name: formData.username,
       email: formData.email,
-      phoneNumber: formData.phno, 
+      phoneNumber: formData.phno,
       password: formData.password,
     };
 
     try {
       let res = await axios.post("http://localhost:3000/api/user/signup", input, {
-    withCredentials: true, 
-  });
-      setUser(res.data.user); 
+        withCredentials: true,
+      });
+      setUser(res.data.user);
       console.log("Signup success:", res.data.user);
       navigate(`/chat`);
     } catch (err) {
@@ -90,9 +90,16 @@ export default function Signup() {
         <Button variant="contained" className="auth-btn" type="submit">
           Submit
         </Button>
-        <p>
-          <Link to={"/login"}>Login if you already have an account</Link>
+        <p style={{ fontSize: "13px", color: "#c5c5d2", textAlign: "center", marginTop: "10px" }}>
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            style={{ color: "#10a37f", textDecoration: "none" }}
+          >
+            Login here
+          </Link>
         </p>
+
       </form>
     </div>
   );

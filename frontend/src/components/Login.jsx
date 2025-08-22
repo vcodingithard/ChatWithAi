@@ -1,4 +1,4 @@
-import React, { use, useState,useContext } from "react";
+import React, { use, useState, useContext } from "react";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import "../Styling/auth.css"
@@ -6,34 +6,34 @@ import axios from "axios";
 import { myContext } from "../MyContext";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
-  
-const navigate = useNavigate();
 
-  let {user,setUser}=useContext(myContext)
+  const navigate = useNavigate();
 
-  let [formData,setFormData]=useState({
-    email:"",
-    password:"",
+  let { user, setUser } = useContext(myContext)
+
+  let [formData, setFormData] = useState({
+    email: "",
+    password: "",
   });
 
-  const handleInputChange=(e)=>{
-    let {name,value}=e.target;
-    setFormData((prev)=>(
+  const handleInputChange = (e) => {
+    let { name, value } = e.target;
+    setFormData((prev) => (
       {
         ...prev,
-        [name]:value,
+        [name]: value,
       }
     ))
   }
-  const handleFormSubmit=async(e)=>{
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    let input={
-      email:formData.email,
-      password:formData.password,
+    let input = {
+      email: formData.email,
+      password: formData.password,
     }
-    let response=await axios.post("http://localhost:3000/api/user/login",input, {
-    withCredentials: true, 
-  }); 
+    let response = await axios.post("http://localhost:3000/api/user/login", input, {
+      withCredentials: true,
+    });
     setUser(response.data.user);
     navigate(`/chat`);
   }
@@ -42,12 +42,21 @@ const navigate = useNavigate();
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2 className="auth-title">Login</h2>
-        <input name="email"  value={formData.email} onChange={handleInputChange} type="email" placeholder="Enter your email" className="auth-input" />
+        <input name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="Enter your email" className="auth-input" />
         <input name="password" onChange={handleInputChange} value={formData.password} type="password" placeholder="Enter your password" className="auth-input" />
         <Button variant="contained" className="auth-btn" type="submit">
           Submit
         </Button>
-        <p><Link to={"/signup"} >or register as a new user </Link></p>
+        <p style={{ fontSize: "13px", color: "#c5c5d2", textAlign: "center", marginTop: "10px" }}>
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            style={{ color: "#10a37f", textDecoration: "none" }}
+          >
+            Register here
+          </Link>
+        </p>
+
       </form>
     </div>
   );
