@@ -9,9 +9,11 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 
 function Sidebar() {
-
+  //for giving the on click or the current thread highlight 
   const [currentThread, setCurrentThread] = useState(null);
-  const { allChats,
+  
+  const { 
+    allChats,
     setAllChats,
     setThreadId,
     deleteThread, 
@@ -45,10 +47,12 @@ function Sidebar() {
   useEffect(() => {
     async function fetchThreads() {
       try {
-        const response = await axios.get("http://localhost:3000/api/thread",{withCredentials:true});
+        const response = await axios.get("http://localhost:3000/api/thread",{
+          withCredentials:true
+        });
         if (response.data.message === "No threads found") {
           setAllChats([]);
-        } else {
+        }else {
           setAllChats(response.data);
         }
       } catch (error) {
