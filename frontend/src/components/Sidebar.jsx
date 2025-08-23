@@ -20,6 +20,7 @@ function Sidebar() {
     setDeleteThread,
     createNewThread,
     setCreateNewThread,
+    user
    } = useContext(myContext);
 
   const navigate = useNavigate();
@@ -106,7 +107,7 @@ function Sidebar() {
       <div className="account">
         <img src="/media/account.png" alt="Account" />
         <div className="profile">
-          <span>Vivek Shenoy</span>
+          <span>{user.email}</span>
           <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>Free</span>
         </div>
       </div>

@@ -52,4 +52,36 @@ setFormData(prev => ({
 }));
 4.Cookie-session Management(between the user and the client) 
 axios.get("http://localhost:3000/api/me", { withCredentials: true });
+
+5. `setInterval` & `clearInterval` in `useEffect`
+- `setInterval(fn, ms)` → runs a function repeatedly every `ms` milliseconds.  
+- `clearInterval(id)` → stops the interval (using the `id` returned by `setInterval`).  
+- In React, always clean up intervals* inside `useEffect`:
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log("Runs every second");
+  }, 1000);
+
+  return () => clearInterval(interval); // cleanup old interval
+}, []);
+
+
+✅ Cleanup ensures old intervals are cleared when the effect re-runs or the component unmounts, preventing duplicate timers and memory leaks.
+ 6. Functional Updates in `useState` (`prev` parameter)
+`setState(value)` → directly sets state (may fail if updates are batched).  
+ `setState(prev => newValue)` → React calls your function with the latest state (`prev`) and uses what you return as the new state.
+// Bad (might use stale state)
+setCount(count + 1);
+
+// Good (always uses latest state)
+setCount(prev => prev + 1);
+
+
+✅ Use the functional form when the new state depends on the previous state (counters, toggles, animations).
+
+🔑 Quick Recap
+- `setInterval` = start a timer that repeats work.  
+- `clearInterval` = stop the timer before starting a new one.  
+- `setState(prev => ...)` = safely update state based on its previous value.
+
   

@@ -31,7 +31,6 @@ function ChatWindow() {
       await axios.get("http://localhost:3000/api/user/logout", { withCredentials: true })
       setUser(null)
       navigate("/login");
-
     } catch (e) {
       console.log(e.message)
     }
@@ -41,7 +40,9 @@ function ChatWindow() {
     event.preventDefault();
     const options = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers:{ 
+        "Content-Type": "application/json"
+      },
       credentials: "include",
       body: JSON.stringify({
         message: promt,
@@ -51,7 +52,7 @@ function ChatWindow() {
     setLoad(true);
     try {
       const response = await fetch("http://localhost:3000/api/chat", options);
-      const data = await response.json();
+      await response.json();
       setPromt("");
       setCreateNewThread(false);
       setNewChat(true)
@@ -89,6 +90,7 @@ function ChatWindow() {
       </div>
 
       <Chat className="chatStyling" />
+
       <ScaleLoader cssOverride={override} color="white" loading={load} />
 
       <footer>
