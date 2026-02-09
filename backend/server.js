@@ -20,8 +20,8 @@ const PORT = process.env.PORT || 3000;
 // Database Connection
 // ----------------------
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ Connected to Mongo Atlas!'))
-  .catch((err) => console.log("❌ Could not connect with the database", err.message));
+  .then(() => console.log(' Connected to Mongo Atlas!'))
+  .catch((err) => console.log(" Could not connect with the database", err.message));
 
 // ----------------------
 // Middlewares
@@ -88,12 +88,12 @@ app.use("/api/user", userRoutes);
 
 // Default route (sanity check)
 app.get("/", (req, res) => {
-  res.json("🚀 Server is running");
+  res.json(" Server is running");
 });
 
 // ----------------------
 // Server Listener
 // ----------------------
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });

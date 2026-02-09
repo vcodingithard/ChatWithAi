@@ -9,7 +9,7 @@ export const getThreads=async (req, res) => {
     const threads = await Thread.find({ owner: ownerId }).sort({ updatedAt: -1 });
 
     if (!threads || threads.length === 0) {
-      return res.status(200).json({ message: "You have to make a new chat in order to create a thread" });
+      return res.status(404).json({ message: "You have to make a new chat in order to create a thread" });
     }
     res.status(200).json(threads);
   } catch (error) {
