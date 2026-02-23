@@ -1,58 +1,28 @@
-import axios from "axios";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file (for GEMINI_API_KEY)
 dotenv.config();
 
 /**
- * Calls Google's Gemini API to generate a response for a given user message.
- * 
- * @param {string} message - The latest message from the user.
- * @param {Object} thread - The chat thread object containing previous messages.
- * @returns {Object} JSON object with Gemini's response (and title if it's the first message).
- * 
- * Expected return format:
- * {
- *   "title": "Short Title",   // only included in the first message
- *   "response": "Bot's detailed response"
- * }
+ * Calls OpenRouter to generate a response for a given user message.
  */
 const geminiApiCall = async (message, thread) => {
   try {
-    // ----------------------
-    // Extract & Format Thread
-    // ----------------------
-
-    // Get previous messages from the thread (if any exist)
+    // 1. Extract & Format Thread History
     const messages = thread?.messages || [];
-
-    // Identify if this is the first message in the thread
     const isFirstMessage = messages.length === 0;
 
-    // Format previous conversation history into readable dialogue
-    // Example:
-    // User: What is JavaScript?
-    // Bot: A scripting language for web development.
     const formattedThread = messages
       .map(m => `${m.role === 'user' ? 'User' : 'Bot'}: ${m.content}`)
       .join("\n");
 
-    // ----------------------
-    // Construct Gemini Prompt
-    // ----------------------
-
-    // Prompt includes:
-    //  - Conversation history (if available)
-    //  - The latest user message
-    //  - Instructions to respond like ChatGPT
-    //  - JSON response format requirement
-    //  - If it's the first message, also request a short title
-    const prompt = 
-    `${!isFirstMessage ? `Previous conversation:\n${formattedThread}\n` : ""}
+    // 2. Construct the Prompt (Maintaining your JSON structure)
+    const prompt = `
+      ${!isFirstMessage ? `Previous conversation:\n${formattedThread}\n` : ""}
       User message: "${message}"
 
-      Please respond in a friendly, conversational, and helpful manner just like ChatGPT would. 
-      Keep your reply simple, professional.
+      Please respond in a friendly, conversational, and helpful manner.
+      Keep your reply simple and professional.
 
       ${isFirstMessage ? "Also provide a 2-3 word title summarizing the topic." : ""}
 
@@ -60,60 +30,45 @@ const geminiApiCall = async (message, thread) => {
       {
         ${isFirstMessage ? `"title": "<short title>",` : ""}
         "response": "<your detailed and crisp response>"
-      }`;
-
-    // ----------------------
-    // Call Gemini API
-    // ----------------------
-
-    const response = await axios.post(
-      // Endpoint for Gemini text generation
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        contents: [{
-          role: "user",
-          parts: [{ text: prompt }]
-        }]
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        }
       }
-    );
+    `;
 
-    // ----------------------
-    // Process API Response
-    // ----------------------
+    // 3. Call OpenRouter API
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "http://localhost:3000", // Required by OpenRouter
+        "X-Title": "mcp-text-server"
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.0-flash-001", // Or "openrouter/auto"
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7, // Slightly higher for more "conversational" feel
+        response_format: { type: "json_object" } // Forces JSON if the model supports it
+      })
+    });
 
-    // Extract raw text output from Gemini's response structure
-    let outputText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    // Clean output:
-    // - Remove code block markers (```json)
-    // - Fix escaped dollar signs (e.g., \$ → $)
-    outputText = outputText
-      .replace(/```json|```/g, "")
-      .replace(/\\\$/g, "$")
-      .trim();
-
-    // ----------------------
-    // Parse JSON
-    // ----------------------
-
-    try {
-      // Attempt to parse Gemini's response into JSON
-      const parsed = JSON.parse(outputText);
-      return parsed;
-    } catch (parseError) {
-      // If Gemini returns invalid JSON, log and throw error
-      console.error("❌ Failed to parse Gemini output:", outputText);
-      throw new Error("Gemini returned invalid JSON");
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`OpenRouter request failed: ${res.status} - ${errorText}`);
     }
 
+    const data = await res.json();
+    let outputText = data?.choices?.[0]?.message?.content;
+
+    if (!outputText) throw new Error("No content returned from OpenRouter");
+
+    // 4. Clean & Parse JSON Output
+    // Removes markdown code blocks if the model accidentally includes them
+    const jsonString = outputText.replace(/```json|```/g, "").trim();
+    
+    return JSON.parse(jsonString);
+
   } catch (err) {
-    // Catch any API/network errors and log for debugging
-    console.error("Error calling Gemini API:", err.response?.data || err.message);
+    console.error("❌ Error in geminiApiCall (OpenRouter):", err.message);
+    throw err;
   }
 };
 

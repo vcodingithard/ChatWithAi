@@ -1,3 +1,5 @@
+import User from "../model/User.js"
+
 export const getUserProfile=(req, res) => { 
   res.json({
     user: {
