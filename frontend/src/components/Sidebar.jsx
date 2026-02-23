@@ -1,118 +1,74 @@
-import { useEffect, useContext } from "react";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import "../Styling/Sidebar.css";
-import axios from "axios";
+import { Box, Typography, IconButton, List, ListItem, ListItemButton, ListItemText, Tooltip, Avatar, Divider } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddCommentIcon from "@mui/icons-material/AddComment";
+import { Link } from "react-router-dom";
+import { useSidebarLogic } from "../hooks/useSidebarLogic";
+import { useContext } from "react";
 import { myContext } from "../MyContext";
-import { Link, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
 
-function Sidebar() {
-  //for giving the on click or the current thread highlight 
-  const [currentThread, setCurrentThread] = useState(null);
-  
-  const { 
-    allChats,
-    setAllChats,
-    setThreadId,
-    deleteThread, 
-    setDeleteThread,
-    createNewThread,
-    setCreateNewThread,
-    user
-   } = useContext(myContext);
-
-  const navigate = useNavigate();
-
-  const  handleThreadCreate = async () => {
-    const newId = uuidv4();
-    setThreadId(newId);
-    setCreateNewThread(true); 
-    navigate(`/chat/${newId}`);
-    setCurrentThread(null)
-  };
-
-  const handleDelete = async (threadid) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/thread/${threadid}`,{withCredentials:true});
-      setAllChats(allChats.filter(m => m.threadId !== threadid));
-      setDeleteThread(true)
-      handleThreadCreate();
-    } catch (e) {
-      console.error("Failed to delete the thread:", e);
-    }
-  };
-
-  //only  trigger this when the new thread for a new chat has been created
-  useEffect(() => {
-    async function fetchThreads() {
-      try {
-        const response = await axios.get("http://localhost:3000/api/thread",{
-          withCredentials:true
-        });
-        if (response.data.message === "No threads found") {
-          setAllChats([]);
-        }else {
-          setAllChats(response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch threads:", error);
-      } finally {
-        if (deleteThread) setDeleteThread(false); // reset after delete
-      }
-    }
-    fetchThreads();
-  }, [deleteThread,createNewThread]);
+const SidebarContent = () => {
+  const { user } = useContext(myContext);
+  const { allChats, currentThread, setCurrentThread, handleThreadCreate, handleDelete, setCreateNewThread } = useSidebarLogic();
 
   return (
-    <div className="sidebar">
-      <div className="icon">
-        <Button onClick={handleThreadCreate}>
-          <img src="/media/logo.png" alt="Logo" />
-        </Button>
-        <Tooltip title="New Chat" placement="top">
-          <Button onClick={handleThreadCreate}>
-            <img src="/media/new chat.png" alt="New Chat" />
-          </Button>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: "#171717", color: "white" }}>
+      {/* Header */}
+      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <img src="/media/logo.png" alt="Logo" style={{ height: 32 }} />
+        <Tooltip title="New Chat">
+          <IconButton onClick={handleThreadCreate} sx={{ color: "white" }}>
+            <AddCommentIcon />
+          </IconButton>
         </Tooltip>
-      </div>
-      <div className="history">
-        <p style={{ color: "rgba(255, 255, 255, 0.5)" }}>Chats</p>
-        {allChats.length > 0 ?
-          <div className="allchats" >
-            {allChats.map((m) => (
-              
-              <Link style={{ 
-                textDecoration: "none",
-                marginTop:"1rem",
-                backgroundColor: currentThread === m.threadId ? "rgba(255,255,255,0.2)" : "", 
-                borderRadius:"1rem",
-              }} onClick={()=>{
-                setCreateNewThread(false),
-                setCurrentThread(m.threadId)
-              }} key={m.threadId} to={`/chat/${m.threadId}`} className="chat-link">
-                <div className="chat">
-                  <p>{m.title}</p>
-                  <button className="delete" onClick={(e) => {
-                    e.preventDefault();
-                    handleDelete(m.threadId);
-                  }}><i className="fa fa-solid fa-trash"></i></button>
-                </div>
-              </Link>
-            ))}
-          </div> : ""}
+      </Box>
 
-      </div>
-      <div className="account">
-        <img src="/media/account.png" alt="Account" />
-        <div className="profile">
-          <span>{user.email}</span>
-          <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>Free</span>
-        </div>
-      </div>
-    </div>
+      {/* History */}
+      <Box sx={{ flex: 1, overflowY: "auto", px: 1 }}>
+        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", ml: 2, mb: 1, display: "block" }}>
+          Recent Chats
+        </Typography>
+        <List>
+          {allChats.map((chat) => (
+            <ListItem 
+              key={chat.threadId} 
+              disablePadding
+              secondaryAction={
+                <IconButton edge="end" onClick={() => handleDelete(chat.threadId)} sx={{ color: "rgba(255,255,255,0.3)", "&:hover": { color: "error.main" } }}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              }
+              sx={{ 
+                mb: 0.5, 
+                borderRadius: 2,
+                bgcolor: currentThread === chat.threadId ? "rgba(255,255,255,0.1)" : "transparent" 
+              }}
+            >
+              <ListItemButton 
+                component={Link} 
+                to={`/chat/${chat.threadId}`}
+                onClick={() => { setCreateNewThread(false); setCurrentThread(chat.threadId); }}
+              >
+                <ListItemText 
+                  primary={chat.title || "New Conversation"} 
+                  primaryTypographyProps={{ fontSize: "0.875rem", noWrap: true }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+      {/* Footer / Account */}
+      <Divider sx={{ bgcolor: "rgba(255,255,255,0.1)" }} />
+      <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 2 }}>
+        <Avatar src="/media/account.png" sx={{ width: 32, height: 32 }} />
+        <Box sx={{ overflow: "hidden" }}>
+          <Typography variant="body2" noWrap>{user?.email}</Typography>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Free Plan</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
-}
+};
 
-export default Sidebar;
+export default SidebarContent;
