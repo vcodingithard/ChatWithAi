@@ -46,7 +46,7 @@ export const useChatLogic = () => {
     };
 
     if (threadId) fetchChats();
-  }, [threadId, newChat, allChats, createNewThread]); // Watch allChats for changes
+  }, [threadId, newChat, allChats, createNewThread, setPrevChats]); // Watch allChats for changes
 
   // Typing Animation Logic
   useEffect(() => {

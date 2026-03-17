@@ -13,13 +13,16 @@ const SidebarContent = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: "#171717", color: "white" }}>
       {/* Header */}
-      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <img src="/media/logo.png" alt="Logo" style={{ height: 32 }} />
-        <Tooltip title="New Chat">
-          <IconButton onClick={handleThreadCreate} sx={{ color: "white" }}>
-            <AddCommentIcon />
-          </IconButton>
-        </Tooltip>
+      <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+        <ListItem disablePadding sx={{ borderRadius: 2, mb: 1, "&:hover": { bgcolor: "rgba(255,255,255,0.05)" } }}>
+          <ListItemButton onClick={handleThreadCreate} sx={{ borderRadius: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", width: "100%", gap: 1 }}>
+              <img src="/media/logo.png" alt="Logo" style={{ height: 28, width: 28, borderRadius: "50%", background: "white", padding: "2px" }} />
+              <Typography variant="body1" fontWeight="500" sx={{ flexGrow: 1 }}>New chat</Typography>
+              <AddCommentIcon fontSize="small" />
+            </Box>
+          </ListItemButton>
+        </ListItem>
       </Box>
 
       {/* History */}

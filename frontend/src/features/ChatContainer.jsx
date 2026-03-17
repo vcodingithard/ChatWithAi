@@ -1,4 +1,4 @@
-import { Box, Typography, Container } from "@mui/material";
+import { Box, Typography, Container, Avatar } from "@mui/material";
 import { useChatLogic } from "../hooks/useChatLogic";
 import ChatMessage from "../components/ChatMessage";
 
@@ -7,19 +7,21 @@ const ChatContainer = () => {
 
   return (
     <Container maxWidth="md" sx={{ 
-      height: "80vh", 
+      minHeight: "100%", 
       display: "flex", 
       flexDirection: "column",
-      py: 4 
+      py: 4,
+      px: { xs: 2, md: 4 }
     }}>
       {prevChats.length === 0 ? (
-        <Box sx={{ m: "auto", textAlign: "center" }}>
-          <Typography variant="h4" fontWeight="bold" color="grey.500">
-            Start a new Chat
+        <Box sx={{ m: "auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+          <Avatar src="/media/logo.png" sx={{ width: 64, height: 64, bgcolor: "white", p: 1, border: "1px solid rgba(255,255,255,0.1)" }} />
+          <Typography variant="h5" fontWeight="500" color="white" sx={{ mt: 2 }}>
+            How can I help you today?
           </Typography>
         </Box>
       ) : (
-        <Box sx={{ flex: 1, overflowY: "auto", px: 2 }}>
+        <Box sx={{ flex: 1, px: 2, pb: 2 }}>
           {/* Historical Messages (minus the very last one) */}
           {prevChats.slice(0, -1).map((m, i) => (
             <ChatMessage key={i} role={m.role} content={m.content} />

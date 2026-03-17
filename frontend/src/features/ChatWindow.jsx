@@ -47,7 +47,7 @@ function ChatWindow() {
     setLoad(true);
     try {
       // 1. Switched to Axios + withCredentials to fix 401
-      const { data } = await axios.post(
+      await axios.post(
         "http://localhost:3000/api/chat", 
         { message: promt, threadId }, 
         { withCredentials: true }
@@ -78,15 +78,14 @@ function ChatWindow() {
     <Box sx={{ 
       display: "flex", 
       flexDirection: "column", 
-      height: "100vh",
-      width: { xs: "100%", md: "calc(100% - 260px)" }, // Better responsiveness with the sidebar
-      ml: "auto"
+      height: "100%",
+      width: "100%"
     }}>
       <Navbar onLogout={handleLogout} />
       
       {load && <LinearProgress color="primary" sx={{ height: 2 }} />}
 
-      <Box sx={{ flex: 1, overflowY: "auto", bgcolor: "#343541" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", bgcolor: "#212121" }}>
         <ChatContainer />
       </Box>
 
