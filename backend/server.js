@@ -8,7 +8,7 @@ import MongoStore from "connect-mongo";
 
 import User from "./model/User.js";
 import chatRoutes from "./routes/chat.js";
-import userRoutes from "./routes/user.js"
+import userRoutes from "./routes/user.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -34,7 +34,7 @@ app.use(express.json());
 // - Allows frontend (http://localhost:5173) to communicate with backend
 // - credentials: true allows cookies/sessions to be shared
 app.use(cors({
-  origin: "http://localhost:5174",
+  origin: "http://localhost:5173",
   credentials: true,
 }));
 
@@ -85,6 +85,8 @@ app.use("/api", chatRoutes);
 
 // All user-related routes (/api/user/...)
 app.use("/api/user", userRoutes);
+
+
 
 // Default route (sanity check)
 app.get("/", (req, res) => {

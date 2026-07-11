@@ -31,7 +31,7 @@ const Navbar = ({ onLogout }) => {
             endIcon={<KeyboardArrowDown fontSize="small" />}
             sx={{ textTransform: "none", fontSize: "1.1rem", fontWeight: "600", color: "#ececec", "&:hover": { bgcolor: "rgba(255,255,255,0.05)", borderRadius: 2 } }}
           >
-            ChatGPT 4o
+            SigmaGPT 4o
           </Button>
         </Box>
 

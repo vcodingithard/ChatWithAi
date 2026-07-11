@@ -26,7 +26,7 @@ const ChatMessage = ({ content, role }) => {
           <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", ml: 2, mb: 0.5 }}>You</Typography>
         )}
         {!isUser && (
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", ml: 1, mb: 0.5, fontWeight: "bold" }}>ChatGPT</Typography>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", ml: 1, mb: 0.5, fontWeight: "bold" }}>SigmaGPT</Typography>
         )}
         <Paper sx={{
           p: isUser ? "10px 20px" : "10px 0px",
@@ -38,7 +38,50 @@ const ChatMessage = ({ content, role }) => {
           "& pre": { bgcolor: "#0d0d0d", p: 2, borderRadius: 2, overflowX: "auto" },
           "& code": { fontFamily: "monospace", fontSize: "0.9rem" }
         }}>
-          <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
+          <ReactMarkdown 
+            rehypePlugins={[[rehypeHighlight, { detect: true }]]}
+            components={{
+              img: ({ node, ...props }) => (
+                <img 
+                  style={{ 
+                    maxWidth: "100%", 
+                    maxHeight: "350px", 
+                    borderRadius: "12px", 
+                    marginTop: "8px", 
+                    marginBottom: "8px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+                    border: "1px solid rgba(255,255,255,0.1)"
+                  }} 
+                  {...props} 
+                />
+              ),
+              a: ({ node, children, ...props }) => (
+                <a 
+                  style={{ 
+                    color: "#10a37f", 
+                    textDecoration: "none", 
+                    fontWeight: "bold",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    backgroundColor: "rgba(16, 163, 127, 0.1)",
+                    border: "1px solid rgba(16, 163, 127, 0.25)",
+                    marginTop: "6px",
+                    marginBottom: "6px",
+                    boxShadow: "0 2px 8px rgba(16, 163, 127, 0.15)",
+                    transition: "all 0.2s"
+                  }} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  {...props} 
+                >
+                  📄 {children}
+                </a>
+              )
+            }}
+          >
             {content}
           </ReactMarkdown>
         </Paper>

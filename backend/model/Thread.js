@@ -17,6 +17,12 @@ const messageASchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    image: {
+        type: String, // Cloudinary URL of the image, if any
+    },
+    tool: {
+        type: String, // tool name used, if any
+    }
 }, 
 { timestamps: true }); // auto-manages createdAt & updatedAt fields
 

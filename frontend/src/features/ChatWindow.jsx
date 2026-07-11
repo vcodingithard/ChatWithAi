@@ -12,6 +12,10 @@ function ChatWindow() {
   const navigate = useNavigate();
   const { Id } = useParams();
   const [load, setLoad] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [filePreview, setFilePreview] = useState("");
+  const [toolMode, setToolMode] = useState("chat"); // "chat" or "text_tools"
+  const [selectedTool, setSelectedTool] = useState("auto"); // "auto", "summarize", "explain", "describe", "generate_pdf", "generate_image"
   
   // Destructure allChats and setAllChats from context
   const { 
@@ -42,28 +46,62 @@ function ChatWindow() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!promt.trim()) return;
+    if (!promt.trim() && !selectedFile) return;
     
     setLoad(true);
     try {
-      // 1. Switched to Axios + withCredentials to fix 401
-      await axios.post(
-        "http://localhost:3000/api/chat", 
-        { message: promt, threadId }, 
-        { withCredentials: true }
-      );
+      if (selectedFile) {
+        // Image tools mode: Send multipart form data to /api/chat
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+        formData.append("message", promt);
+        formData.append("threadId", threadId);
+        formData.append("toolMode", toolMode);
+        formData.append("selectedTool", selectedTool);
 
-      // 2. Clear input and stop "New Thread" mode
-      setPromt("");
-      setCreateNewThread(false);
+        await axios.post(
+          "http://localhost:3000/api/chat", 
+          formData, 
+          { 
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true 
+          }
+        );
 
-      // 3. If this thread isn't in our sidebar list yet, add it (Fixes 404 on refresh)
-      const exists = allChats.some(chat => chat.threadId === threadId);
-      if (!exists) {
-        setAllChats(prev => [{ threadId, title: promt.slice(0, 30) }, ...prev]);
+        // Clear file upload selection
+        setSelectedFile(null);
+        if (filePreview) {
+          URL.revokeObjectURL(filePreview);
+          setFilePreview("");
+        }
+      } else if (toolMode === "text_tools") {
+        // Text tools mode: Send JSON input to /api/chat
+        await axios.post(
+          "http://localhost:3000/api/chat",
+          { message: promt, threadId, toolMode, selectedTool },
+          { withCredentials: true }
+        );
+      } else {
+        // Standard chat: Send JSON to /api/chat
+        await axios.post(
+          "http://localhost:3000/api/chat", 
+          { message: promt, threadId, toolMode, selectedTool: "chat" }, 
+          { withCredentials: true }
+        );
       }
 
-      // 4. Trigger typing animation in useChatLogic
+      // Clear input and stop "New Thread" mode
+      setPromt("");
+      setCreateNewThread(false);
+      setSelectedTool("auto");
+
+      // If this thread isn't in our sidebar list yet, add it (Fixes 404 on refresh)
+      const exists = allChats.some(chat => chat.threadId === threadId);
+      if (!exists) {
+        setAllChats(prev => [{ threadId, title: promt.slice(0, 30) || "Image/Text Query" }, ...prev]);
+      }
+
+      // Trigger typing animation in useChatLogic
       setNewChat(true);
 
     } catch (error) {
@@ -94,6 +132,14 @@ function ChatWindow() {
         setPrompt={setPromt} 
         onSubmit={handleSubmit} 
         loading={load} 
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        filePreview={filePreview}
+        setFilePreview={setFilePreview}
+        toolMode={toolMode}
+        setToolMode={setToolMode}
+        selectedTool={selectedTool}
+        setSelectedTool={setSelectedTool}
       />
     </Box>
   );
