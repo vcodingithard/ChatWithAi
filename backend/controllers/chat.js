@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import path from "path";
 import geminiApiCall from "../utils/geminiApiCall.js";
 import Thread from "../model/Thread.js";
 import { extractTextFromImage } from "../utils/ocr.js";
@@ -8,7 +9,7 @@ import { imageDispatch } from "../utils/dispatcher.js";
 import { llm } from "../utils/llm.client.js";
 import { createImageContext } from "../contexts/image.context.js";
 import { savePdfTool } from "../tools/pdf/savePdf.tool.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { buildPublicUploadUrl, uploadToCloudinary } from "../utils/cloudinary.js";
 import { createTextContext } from "../contexts/text.context.js";
 import { toolRouterPrompt } from "../prompts/router.prompt.js";
 import { textDispatch } from "../utils/dispatcher.js";
@@ -77,12 +78,17 @@ export const createThread=async (req, res) => {
       let uploadedImageUrl = "";
       try {
         console.log("Uploading user image to Cloudinary...");
-        const cloudinaryResult = await uploadToCloudinary(imagePath, "uploaded-images");
+        const cloudinaryResult = await uploadToCloudinary(imagePath, "uploaded-images", {
+          preserveLocalFileOnError: true,
+          removeLocalFile: true,
+        });
         uploadedImageUrl = cloudinaryResult.secure_url;
         console.log("Uploaded user image to Cloudinary URL:", uploadedImageUrl);
         imagePath = null; // Mark as null so the finally block doesn't try to double-delete
       } catch (err) {
         console.error("Failed to upload user image to Cloudinary:", err.message);
+        uploadedImageUrl = buildPublicUploadUrl(req.file.path);
+        console.log("Using local fallback image URL:", uploadedImageUrl);
       }
 
       // 4. Build image context
@@ -154,17 +160,25 @@ ${req.file.mimetype}
         modelContent = `Generated PDF: [Download PDF](${pdf.path})\n\n${result.content}`;
         responsePayload = { tool: safeTool, pdf, response: modelContent };
       } else if (result && result.type === "image") {
-        modelContent = `Generated Image:\n![generated image](${result.path})`;
-        responsePayload = { tool: safeTool, image: result.path, response: modelContent };
+        const generatedImageUrl = result.path || "";
+        modelContent = `Generated Image:\n![generated image](${generatedImageUrl})`;
+        responsePayload = { tool: safeTool, image: generatedImageUrl, response: modelContent };
+        modelMessageObject.image = generatedImageUrl;
       } else {
         modelContent = typeof result === "object" ? JSON.stringify(result) : result;
         responsePayload = { tool: safeTool, output: result, response: modelContent };
       }
 
       // Save image reference in user message
-      const imageMarkdown = `![Uploaded Image](${uploadedImageUrl})`;
-      userMessageObject.content = userMessage ? `${imageMarkdown}\n\n${userMessage}` : imageMarkdown;
-      userMessageObject.image = uploadedImageUrl;
+      const imageMarkdown = uploadedImageUrl ? `![Uploaded Image](${uploadedImageUrl})` : "";
+      userMessageObject.content = userMessage
+        ? [imageMarkdown, userMessage].filter(Boolean).join("\n\n")
+        : imageMarkdown || userMessage;
+      userMessageObject.image = uploadedImageUrl || "";
+      responsePayload = {
+        ...responsePayload,
+        uploadedImageUrl,
+      };
 
       // Add tool metadata to bot message
       modelMessageObject.content = modelContent;
@@ -193,8 +207,10 @@ ${req.file.mimetype}
         modelContent = `Generated PDF: [Download PDF](${pdf.path})\n\n${result.content}`;
         responsePayload = { tool, pdf, response: modelContent };
       } else if (result && result.type === "image") {
-        modelContent = `Generated Image:\n![generated image](${result.path})`;
-        responsePayload = { tool, image: result.path, response: modelContent };
+        const generatedImageUrl = result.path || "";
+        modelContent = `Generated Image:\n![generated image](${generatedImageUrl})`;
+        responsePayload = { tool, image: generatedImageUrl, response: modelContent };
+        modelMessageObject.image = generatedImageUrl;
       } else {
         modelContent = typeof result === "object" ? JSON.stringify(result) : result;
         responsePayload = { tool, output: result, response: modelContent };

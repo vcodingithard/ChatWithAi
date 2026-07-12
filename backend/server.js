@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import passport from "passport";  
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import path from "path";
 
 import User from "./model/User.js";
 import chatRoutes from "./routes/chat.js";
@@ -40,6 +41,9 @@ app.use(cors({
 
 // Parse URL-encoded data (for form submissions)
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files so the frontend can display them even if Cloudinary is unavailable.
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ----------------------
 // Session Management

@@ -19,6 +19,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [createNewThread, setCreateNewThread] = useState(false);
   const [deleteThread, setDeleteThread] = useState(false);
   const [newChat, setNewChat] = useState(false);
@@ -49,11 +50,12 @@ function App() {
       allChats, setAllChats, 
       user, setUser, 
       setMobileOpen,
+      rightSidebarOpen, setRightSidebarOpen,
       createNewThread, setCreateNewThread,
       deleteThread, setDeleteThread,
       newChat, setNewChat
     }}>
-      <Box sx={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", bgcolor: "#212121" }}>
+      <Box sx={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", bgcolor: "#090d16" }}>
         {user ? (
           <>
             {/* Mobile Drawer */}
@@ -70,13 +72,13 @@ function App() {
             </Drawer>
 
             {/* Desktop Sidebar */}
-            <Box sx={{ display: { xs: "none", md: "block" }, width: 260, flexShrink: 0, bgcolor: "#171717", borderRight: "1px solid #333" }}>
+            <Box sx={{ display: { xs: "none", md: "block" }, width: 260, flexShrink: 0, bgcolor: "#0c101b", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
               <SidebarContent />
             </Box>
 
             {/* Main Content */}
             <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", position: "relative", height: "100%", width: "100%" }}>
-              <Box component="main" sx={{ flexGrow: 1, overflowY: "auto", position: "relative", bgcolor: "#212121" }}>
+              <Box component="main" sx={{ flexGrow: 1, overflowY: "auto", position: "relative", bgcolor: "#090d16" }}>
                 <Routes>
                   <Route path="/" element={<Navigate to={`/chat/${threadId}`} />} />
                   <Route path="/chat/:Id" element={<ChatWindow />} />

@@ -31,7 +31,9 @@ export async function savePdfTool(text) {
     stream.on("finish", async () => {
       try {
         // Upload PDF to Cloudinary (it deletes the local temp file)
-        const cloudinaryResult = await uploadToCloudinary(filePath, "generated-pdfs");
+        const cloudinaryResult = await uploadToCloudinary(filePath, "generated-pdfs", {
+          removeLocalFile: true,
+        });
         resolve({
           success: true,
           path: cloudinaryResult.secure_url
