@@ -14,8 +14,9 @@ if (!fs.existsSync(uploadsDir)) {
 
 export const imageTool = {
   async generate(prompt) {
+    const modelId = process.env.HF_IMAGE_MODEL || "black-forest-labs/FLUX.1-schnell";
     const res = await fetch(
-      "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0",
+      `https://router.huggingface.co/hf-inference/models/${modelId}`,
       {
         method: "POST",
         headers: {
@@ -23,10 +24,31 @@ export const imageTool = {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          inputs: prompt
+          inputs: prompt,
+          parameters: {
+            num_inference_steps: 4,
+            guidance_scale: 0
+          }
         })
       }
     );
+
+    if (res.status === 503) {
+      let details = "The image model is still loading. Please try again in a moment.";
+      try {
+        const json = await res.json();
+        if (json?.estimated_time) {
+          details = `The image model is still loading. Please try again in about ${json.estimated_time} seconds.`;
+        }
+      } catch {
+      }
+      throw new Error(details);
+    }
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Image generation failed with status ${res.status}: ${text}`);
+    }
 
     // SAFETY CHECK — do NOT remove this
     const contentType = res.headers.get("content-type") || "";
@@ -42,11 +64,13 @@ export const imageTool = {
     fs.writeFileSync(filePath, Buffer.from(buffer));
 
     // Upload to Cloudinary and get URL (local file is deleted inside uploadToCloudinary)
-    const cloudinaryResult = await uploadToCloudinary(filePath, "generated-images");
+    const cloudinaryResult = await uploadToCloudinary(filePath, "generated-images", {
+      removeLocalFile: true,
+    });
 
     return {
       type: "image",
-      path: cloudinaryResult.secure_url
+      path: cloudinaryResult.secure_url || cloudinaryResult.fallbackUrl || ""
     };
   }
-};
+};  
