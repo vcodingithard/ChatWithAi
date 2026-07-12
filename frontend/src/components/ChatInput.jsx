@@ -1,9 +1,10 @@
-import { Box, TextField, IconButton, Typography, Tooltip } from "@mui/material";
+import { Box, TextField, IconButton, Typography, Tooltip, Chip } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const ChatInput = ({ 
   prompt, 
@@ -37,8 +38,17 @@ const ChatInput = ({
     }
   };
 
+  const toolOptions = [
+    { id: "auto", label: "Auto Classify", emoji: "🪄" },
+    { id: "summarize", label: "Summarize", emoji: "📝" },
+    { id: "explain", label: "Explain", emoji: "💡" },
+    { id: "describe", label: "Describe", emoji: "🔍" },
+    { id: "generate_pdf", label: "Generate PDF", emoji: "📄" },
+    ...(!selectedFile && toolMode === "text_tools" ? [{ id: "generate_image", label: "Generate Image", emoji: "🎨" }] : [])
+  ];
+
   return (
-    <Box component="footer" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", bgcolor: "#212121" }}>
+    <Box component="footer" sx={{ p: 3, display: "flex", flexDirection: "column", alignItems: "center", bgcolor: "#090d16", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
       <Box 
         component="form" 
         onSubmit={onSubmit}
@@ -47,201 +57,169 @@ const ChatInput = ({
           flexDirection: "column",
           width: "100%",
           maxWidth: "800px", 
-          bgcolor: "#2f2f2f",
-          borderRadius: "24px",
-          p: "8px 16px",
+          bgcolor: "rgba(17, 24, 39, 0.6)",
+          backdropFilter: "blur(12px)",
+          borderRadius: "18px",
+          p: "12px 18px",
           position: "relative",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-          border: "1px solid rgba(255,255,255,0.08)"
+          boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+          border: "1px solid rgba(255,255,255,0.06)"
         }}
       >
+        {/* Workspace Mode Tabs */}
+        {!selectedFile && (
+          <Box sx={{ display: "flex", gap: 1, mb: 1.5, pb: 1, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <Box 
+              onClick={() => setToolMode("chat")}
+              sx={{
+                fontSize: "0.78rem",
+                fontWeight: "600",
+                color: toolMode === "chat" ? "white" : "rgba(255,255,255,0.4)",
+                px: 2,
+                py: 0.75,
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                bgcolor: toolMode === "chat" ? "rgba(255,255,255,0.05)" : "transparent",
+                border: "1px solid",
+                borderColor: toolMode === "chat" ? "rgba(255,255,255,0.08)" : "transparent",
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}
+            >
+              <ChatIcon sx={{ fontSize: 13, color: toolMode === "chat" ? "#34d399" : "inherit" }} />
+              Assistant Chat
+            </Box>
+            <Box 
+              onClick={() => setToolMode("text_tools")}
+              sx={{
+                fontSize: "0.78rem",
+                fontWeight: "600",
+                color: toolMode === "text_tools" ? "white" : "rgba(255,255,255,0.4)",
+                px: 2,
+                py: 0.75,
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                bgcolor: toolMode === "text_tools" ? "rgba(99, 102, 241, 0.15)" : "transparent",
+                border: "1px solid",
+                borderColor: toolMode === "text_tools" ? "rgba(99, 102, 241, 0.25)" : "transparent",
+                display: "flex",
+                alignItems: "center",
+                gap: 1
+              }}
+            >
+              <AutoAwesomeIcon sx={{ fontSize: 13, color: toolMode === "text_tools" ? "#a855f7" : "inherit" }} />
+              Text Intel Studio
+            </Box>
+          </Box>
+        )}
+
+        {/* Selected File Indicator Bar */}
+        {selectedFile && (
+          <Box sx={{ display: "flex", gap: 1, mb: 1.5, pb: 1, borderBottom: "1px solid rgba(255,255,255,0.05)", alignItems: "center" }}>
+            <Box sx={{
+              fontSize: "0.78rem",
+              fontWeight: "700",
+              color: "white",
+              px: 2,
+              py: 0.75,
+              borderRadius: "8px",
+              bgcolor: "rgba(129, 140, 248, 0.15)",
+              border: "1px solid rgba(129, 140, 248, 0.25)",
+              display: "flex",
+              alignItems: "center",
+              gap: 1
+            }}>
+              <AutoAwesomeIcon sx={{ fontSize: 13, color: "#818cf8" }} />
+              Image Pipeline Active
+            </Box>
+          </Box>
+        )}
+
         {/* Tool Selector Chips */}
         {(selectedFile || toolMode === "text_tools") && (
           <Box sx={{ 
             display: "flex", 
-            gap: 1.2, 
+            gap: 1, 
             flexWrap: "wrap", 
             mb: 1.5, 
-            pb: 1,
-            borderBottom: "1px solid rgba(255,255,255,0.06)" 
+            pb: 1.2,
+            borderBottom: "1px solid rgba(255,255,255,0.05)" 
           }}>
-            {/* Auto chip */}
-            <Box 
-              onClick={() => setSelectedTool("auto")}
-              sx={{
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                bgcolor: selectedTool === "auto" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                color: selectedTool === "auto" ? "white" : "rgba(255,255,255,0.7)",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: selectedTool === "auto" ? "#10a37f" : "transparent",
-                "&:hover": {
-                  bgcolor: selectedTool === "auto" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                  color: "white"
-                }
-              }}
-            >
-              🪄 Auto Classify
-            </Box>
-
-            {/* Summarize chip */}
-            <Box 
-              onClick={() => setSelectedTool("summarize")}
-              sx={{
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                bgcolor: selectedTool === "summarize" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                color: selectedTool === "summarize" ? "white" : "rgba(255,255,255,0.7)",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: selectedTool === "summarize" ? "#10a37f" : "transparent",
-                "&:hover": {
-                  bgcolor: selectedTool === "summarize" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                  color: "white"
-                }
-              }}
-            >
-              📝 Summarize
-            </Box>
-
-            {/* Explain chip */}
-            <Box 
-              onClick={() => setSelectedTool("explain")}
-              sx={{
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                bgcolor: selectedTool === "explain" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                color: selectedTool === "explain" ? "white" : "rgba(255,255,255,0.7)",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: selectedTool === "explain" ? "#10a37f" : "transparent",
-                "&:hover": {
-                  bgcolor: selectedTool === "explain" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                  color: "white"
-                }
-              }}
-            >
-              💡 Explain
-            </Box>
-
-            {/* Describe chip */}
-            <Box 
-              onClick={() => setSelectedTool("describe")}
-              sx={{
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                bgcolor: selectedTool === "describe" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                color: selectedTool === "describe" ? "white" : "rgba(255,255,255,0.7)",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: selectedTool === "describe" ? "#10a37f" : "transparent",
-                "&:hover": {
-                  bgcolor: selectedTool === "describe" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                  color: "white"
-                }
-              }}
-            >
-              🔍 Describe
-            </Box>
-
-            {/* Generate PDF chip */}
-            <Box 
-              onClick={() => setSelectedTool("generate_pdf")}
-              sx={{
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                bgcolor: selectedTool === "generate_pdf" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                color: selectedTool === "generate_pdf" ? "white" : "rgba(255,255,255,0.7)",
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "16px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                border: "1px solid",
-                borderColor: selectedTool === "generate_pdf" ? "#10a37f" : "transparent",
-                "&:hover": {
-                  bgcolor: selectedTool === "generate_pdf" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                  color: "white"
-                }
-              }}
-            >
-              📄 Generate PDF
-            </Box>
-
-            {/* Generate Image chip (only show in text tools mode without image upload) */}
-            {!selectedFile && toolMode === "text_tools" && (
-              <Box 
-                onClick={() => setSelectedTool("generate_image")}
-                sx={{
-                  fontSize: "0.75rem",
-                  fontWeight: "500",
-                  bgcolor: selectedTool === "generate_image" ? "#10a37f" : "rgba(255,255,255,0.06)",
-                  color: selectedTool === "generate_image" ? "white" : "rgba(255,255,255,0.7)",
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: "16px",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  border: "1px solid",
-                  borderColor: selectedTool === "generate_image" ? "#10a37f" : "transparent",
-                  "&:hover": {
-                    bgcolor: selectedTool === "generate_image" ? "#10a37f" : "rgba(255,255,255,0.12)",
-                    color: "white"
-                  }
-                }}
-              >
-                🎨 Generate Image
-              </Box>
-            )}
+            {toolOptions.map((opt) => {
+              const isSel = selectedTool === opt.id;
+              return (
+                <Box 
+                  key={opt.id}
+                  onClick={() => setSelectedTool(opt.id)}
+                  sx={{
+                    fontSize: "0.72rem",
+                    fontWeight: "600",
+                    bgcolor: isSel ? "#4f46e5" : "rgba(255,255,255,0.03)",
+                    color: isSel ? "white" : "rgba(255,255,255,0.55)",
+                    px: 1.6,
+                    py: 0.6,
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    border: "1px solid",
+                    borderColor: isSel ? "#6366f1" : "rgba(255,255,255,0.05)",
+                    "&:hover": {
+                      bgcolor: isSel ? "#4f46e5" : "rgba(255,255,255,0.08)",
+                      color: "white"
+                    }
+                  }}
+                >
+                  {opt.emoji} {opt.label}
+                </Box>
+              );
+            })}
           </Box>
         )}
 
-        {/* Image Preview Area */}
+        {/* Image Preview Block */}
         {filePreview && (
           <Box sx={{ 
             position: "relative", 
-            display: "inline-block", 
-            mt: 1, 
-            mb: 1.5,
+            display: "flex", 
+            alignItems: "center",
+            gap: 2,
+            mt: 0.5, 
+            mb: 2,
+            p: 1,
             borderRadius: "12px",
-            overflow: "hidden",
-            border: "1px solid rgba(255,255,255,0.15)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            bgcolor: "rgba(0,0,0,0.25)",
             width: "fit-content",
             alignSelf: "flex-start",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.3)"
+            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.5)"
           }}>
-            <img src={filePreview} alt="Preview" style={{ height: "65px", display: "block", borderRadius: "12px" }} />
+            <img src={filePreview} alt="Preview" style={{ height: "46px", display: "block", borderRadius: "8px", objectFit: "cover" }} />
+            <Box sx={{ pr: 4 }}>
+              <Typography variant="body2" sx={{ color: "white", fontSize: "0.78rem", fontWeight: "600", noWrap: true, maxWidth: "160px" }}>
+                {selectedFile?.name || "Uploaded Attachment"}
+              </Typography>
+              <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.35)", fontSize: "0.68rem" }}>
+                {(selectedFile?.size / 1024).toFixed(1)} KB
+              </Typography>
+            </Box>
             <IconButton
               onClick={handleClearFile}
               size="small"
               sx={{
                 position: "absolute",
-                top: 4,
-                right: 4,
-                bgcolor: "rgba(0,0,0,0.75)",
-                color: "white",
-                "&:hover": { bgcolor: "rgba(0,0,0,0.95)" },
+                top: "50%",
+                right: 8,
+                transform: "translateY(-50%)",
+                bgcolor: "rgba(255,255,255,0.06)",
+                color: "rgba(255,255,255,0.6)",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.12)", color: "white" },
                 p: "4px"
               }}
             >
-              <CloseIcon sx={{ fontSize: "14px" }} />
+              <CloseIcon sx={{ fontSize: "12px" }} />
             </IconButton>
           </Box>
         )}
@@ -249,7 +227,6 @@ const ChatInput = ({
         {/* Input Control Row */}
         <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1.5, width: "100%" }}>
           
-          {/* File Input */}
           <input
             type="file"
             accept="image/*"
@@ -261,51 +238,21 @@ const ChatInput = ({
           
           {/* Attach Button */}
           <label htmlFor="chat-file-input" style={{ display: "flex" }}>
-            <Tooltip title="Upload Image (OCR + Captioning)" placement="top">
+            <Tooltip title="Attach Asset (OCR + Capture)" placement="top">
               <IconButton 
                 component="span" 
                 disabled={loading}
                 sx={{ 
-                  color: selectedFile ? "#10a37f" : "rgba(255,255,255,0.6)",
-                  "&:hover": { color: "white", bgcolor: "rgba(255,255,255,0.08)" },
-                  p: "8px",
-                  mb: "4px"
+                  color: selectedFile ? "#818cf8" : "rgba(255,255,255,0.45)",
+                  "&:hover": { color: "white", bgcolor: "rgba(255,255,255,0.05)" },
+                  p: "10px",
+                  mb: "2px"
                 }}
               >
                 <AttachFileIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </label>
-
-          {/* Mode Switcher Button */}
-          <Tooltip 
-            title={selectedFile ? "Image Tools Mode Active" : toolMode === "text_tools" ? "Switch to ChatGPT Chat" : "Switch to Smart Text Tools"} 
-            placement="top"
-          >
-            <IconButton 
-              disabled={loading || !!selectedFile}
-              onClick={() => setToolMode(prev => prev === "chat" ? "text_tools" : "chat")}
-              sx={{ 
-                color: selectedFile 
-                  ? "rgba(16, 163, 127, 0.4)" 
-                  : toolMode === "text_tools" 
-                    ? "#10a37f" 
-                    : "rgba(255,255,255,0.6)",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.08)" },
-                p: "8px",
-                mb: "4px",
-                transition: "all 0.2s"
-              }}
-            >
-              {selectedFile ? (
-                <AutoAwesomeIcon fontSize="small" />
-              ) : toolMode === "text_tools" ? (
-                <AutoAwesomeIcon fontSize="small" />
-              ) : (
-                <ChatIcon fontSize="small" />
-              )}
-            </IconButton>
-          </Tooltip>
 
           {/* Text Area */}
           <TextField
@@ -314,21 +261,23 @@ const ChatInput = ({
             maxRows={8}
             placeholder={
               selectedFile 
-                ? "Add instructions for the image analysis..." 
+                ? "Instruct the image compiler (describe, explain, summarize, pdf)..." 
                 : toolMode === "text_tools" 
-                  ? "Ask Smart Text Tools (summarize, explain, describe, generate pdf, generate image)..." 
-                  : "Message ChatGPT..."
+                  ? "Enter instructions for Smart Text Studio..." 
+                  : "Message AI Assistant..."
             }
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             disabled={loading}
             variant="standard"
             sx={{
-              py: 1,
-              px: 1,
+              py: 0.75,
+              px: 0.5,
               color: "white",
               "& .MuiInputBase-root": {
                 color: "white",
+                fontSize: "0.92rem",
+                lineHeight: 1.5
               },
             }}
             InputProps={{ disableUnderline: true }}
@@ -339,28 +288,33 @@ const ChatInput = ({
             type="submit" 
             disabled={loading || (!prompt.trim() && !selectedFile)} 
             sx={{ 
-              color: (prompt.trim() || selectedFile) ? "white" : "rgba(255,255,255,0.3)",
-              bgcolor: (prompt.trim() || selectedFile) ? "white" : "transparent",
-              "& svg": { color: (prompt.trim() || selectedFile) ? "#2f2f2f" : "rgba(255,255,255,0.4)" },
-              "&:hover": { bgcolor: (prompt.trim() || selectedFile) ? "#d4d4d4" : "transparent" },
-              p: "8px",
-              mb: "4px",
-              borderRadius: "50%",
+              color: "white",
+              bgcolor: (prompt.trim() || selectedFile) ? "#4f46e5" : "rgba(255,255,255,0.02)",
+              "& svg": { 
+                color: (prompt.trim() || selectedFile) ? "white" : "rgba(255,255,255,0.2)",
+                fontSize: "16px"
+              },
+              "&:hover": { 
+                bgcolor: (prompt.trim() || selectedFile) ? "#4338ca" : "rgba(255,255,255,0.02)" 
+              },
+              p: "10px",
+              mb: "2px",
+              borderRadius: "12px",
               transition: "all 0.2s ease"
             }}
           >
-            <SendIcon fontSize="small" />
+            <SendIcon />
           </IconButton>
         </Box>
       </Box>
       
       {/* Dynamic Instruction/Status Line */}
-      <Typography variant="caption" sx={{ display: "block", textAlign: "center", mt: 1.5, color: "#9b9b9b", fontSize: "0.75rem" }}>
+      <Typography variant="caption" sx={{ display: "block", textAlign: "center", mt: 1.5, color: "rgba(255,255,255,0.3)", fontSize: "0.72rem", letterSpacing: "0.2px" }}>
         {selectedFile 
-          ? "✨ Image Mode active: Uploading to Cloudinary + OCR + AI tool analysis" 
+          ? "✨ Pipeline Activated: Image uploaded to Cloudinary ➜ runs Tesseract OCR ➜ executes classification model" 
           : toolMode === "text_tools" 
-            ? "⚡ Smart Text Mode active: AI will classify and execute summarize, explain, describe, generate pdf, or generate image" 
-            : "💬 Chat mode active: Standard ChatGPT conversation"}
+            ? "⚡ Text Studio Mode Active: Select a compile processor to classify and run instructions" 
+            : "💬 Chat Mode Active: Conversational workspace with fallback model streams"}
       </Typography>
     </Box>
   );
