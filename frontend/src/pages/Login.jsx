@@ -8,8 +8,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const inputContainer = "relative flex items-center";
-  const iconStyle = "absolute left-4 text-gray-400";
-  const inputStyle = "w-full pl-12 pr-12 py-3 bg-[#f9fafb] border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#10a37f]/20 focus:border-[#10a37f] outline-none transition-all text-gray-900 placeholder:text-gray-400";
+  const iconStyle = "absolute left-4 text-slate-400";
+  const inputStyle = "w-full pl-12 pr-12 py-3 bg-[#1e293b]/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-slate-500";
 
   return (
     <AuthLayout
