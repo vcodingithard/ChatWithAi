@@ -1,6 +1,6 @@
-# Dogpt Premium AI Studio: Architecture & Technical Guide
+# ConvexAi Premium AI Studio: Architecture & Technical Guide
 
-Welcome to the **Dogpt AI Studio** technical documentation and revision manual. This project is a three-column AI workspace that integrates OCR extraction, local image captioning, intelligent text/image routing, Hugging Face generation models, PDF compiling, and secure cloud storage.
+Welcome to the ** ConvexAI Studio** technical documentation and revision manual. This project is a three-column AI workspace that integrates OCR extraction, local image captioning, intelligent text/image routing, Hugging Face generation models, PDF compiling, and secure cloud storage.
 
 ---
 
