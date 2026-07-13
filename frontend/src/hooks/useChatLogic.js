@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { myContext } from "../MyContext";
 import axios from "axios";
+import { getApiUrl } from "../config";
 
 export const useChatLogic = () => {
   const { 
@@ -34,7 +35,7 @@ export const useChatLogic = () => {
       }
 
       try {
-        const { data } = await axios.get(`http://localhost:3000/api/thread/${threadId}`, { 
+        const { data } = await axios.get(getApiUrl(`/api/thread/${threadId}`), { 
           withCredentials: true 
         });
         const messages = data.messages || [];

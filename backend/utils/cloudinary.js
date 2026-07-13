@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const backendBaseUrl = (process.env.BACKEND_URL || process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 3000}`).replace(/\/$/, "");
+
 // Configure Cloudinary after dotenv has loaded the environment variables.
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,7 +19,7 @@ export function buildPublicUploadUrl(filePath) {
   if (!filePath) return "";
 
   const normalizedPath = filePath.replace(/\\/g, "/");
-  const baseUrl = `http://localhost:${process.env.PORT || 3000}`;
+  const baseUrl = backendBaseUrl;
 
   const relativePath = path.isAbsolute(filePath)
     ? path.relative(process.cwd(), filePath).replace(/\\/g, "/")
@@ -88,11 +90,25 @@ export async function uploadToCloudinary(localFilePath, folder = "dogpt", option
       uploadOptions.resource_type = "auto";
     }
 
-    if (process.env.CLOUDINARY_UPLOAD_PRESET) {
-      uploadOptions.upload_preset = process.env.CLOUDINARY_UPLOAD_PRESET;
+    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET?.trim();
+    if (uploadPreset) {
+      uploadOptions.upload_preset = uploadPreset;
     }
 
-    const result = await cloudinary.uploader.upload(safeFilePath, uploadOptions);
+    let result;
+    try {
+      result = await cloudinary.uploader.upload(safeFilePath, uploadOptions);
+    } catch (uploadError) {
+      const message = uploadError?.message || "";
+      if (uploadPreset && /preset|upload preset/i.test(message)) {
+        console.warn("Cloudinary upload preset rejected; retrying without preset.");
+        delete uploadOptions.upload_preset;
+        result = await cloudinary.uploader.upload(safeFilePath, uploadOptions);
+      } else {
+        throw uploadError;
+      }
+    }
+
     uploadSucceeded = true;
     return {
       ...result,

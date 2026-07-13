@@ -7,6 +7,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import ChatInput from "../components/ChatInput";
 import ChatContainer from "./ChatContainer";
+import { getApiUrl } from "../config";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import DescriptionIcon from "@mui/icons-material/Description";
 import ImageIcon from "@mui/icons-material/Image";
@@ -42,7 +43,7 @@ function ChatWindow() {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/user/logout", { withCredentials: true });
+      await axios.get(getApiUrl("/api/user/logout"), { withCredentials: true });
       setUser(null);
       navigate("/login");
     } catch (e) {
@@ -84,7 +85,7 @@ function ChatWindow() {
       } else if (toolMode === "text_tools") {
         // Text tools mode: Send JSON input to /api/chat
         await axios.post(
-          "http://localhost:3000/api/chat",
+          getApiUrl("/api/chat"),
           { message: promptToSend, threadId, toolMode, selectedTool },
           { withCredentials: true }
         );

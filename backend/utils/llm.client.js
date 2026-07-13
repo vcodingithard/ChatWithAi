@@ -15,7 +15,7 @@ export const llm = {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            "HTTP-Referer": "http://localhost:3000",
+            "HTTP-Referer": (process.env.BACKEND_URL || process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 3000}`).replace(/\/$/, ""),
             "X-Title": "mcp-text-server"
           },
           body: JSON.stringify({

@@ -17,7 +17,7 @@ export const useAuth = (isLogin = true) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = `http://localhost:3000/api/user/${isLogin ? "login" : "signup"}`;
+    const url = `${import.meta.env.VITE_SERVER_URL}/api/user/${isLogin ? "login" : "signup"}`;
     
     // Map internal state to what your API expects
     const payload = isLogin 
