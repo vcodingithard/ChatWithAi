@@ -16,7 +16,6 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const allowedOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || "http://localhost:5173";
 
 // ----------------------
 // Database Connection
@@ -26,74 +25,83 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.log(" Could not connect with the database", err.message));
 
 // ----------------------
-// Middlewares
+// Middlewares & CORS Setup
 // ----------------------
 
 // Parse incoming JSON requests
 app.use(express.json());
 
-// Enable CORS (Cross-Origin Resource Sharing)
-// - Allows frontend (http://localhost:5173) to communicate with backend
-// - credentials: true allows cookies/sessions to be shared
+// Dynamic CORS Configuration for Production
+const frontendUrlEnv = process.env.FRONTEND_URL || "";
+const allowedOrigins = frontendUrlEnv
+  .split(",")
+  .map(url => url.trim())
+  .filter(url => url.length > 0);
+
+// Default fallback for local development if environment variable is missing
+if (allowedOrigins.length === 0) {
+  allowedOrigins.push("http://localhost:5173");
+}
+
 app.use(cors({
-  origin: allowedOrigin,
-  credentials: true,
+  origin: function (origin, callback) {
+    // Allow server-to-server requests or tools like Postman (no origin header)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true, // Allows cookies/sessions to be shared
 }));
 
 // Parse URL-encoded data (for form submissions)
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files so the frontend can display them even if Cloudinary is unavailable.
+// Serve uploaded files
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ----------------------
 // Session Management
 // ----------------------
-// - Stores session in MongoDB using connect-mongo
-// - Required for maintaining user login sessions
+const isProduction = process.env.NODE_ENV === "production";
+
 app.use(session({
-  secret: process.env.SESSION_SECRET, // keep this secret in .env
-  resave: false,                      // don’t save if nothing changed
-  saveUninitialized: false,           // don’t save empty sessions
+  secret: process.env.SESSION_SECRET, 
+  resave: false,                      
+  saveUninitialized: false,           
   store: MongoStore.create({ 
     mongoUrl: process.env.MONGO_URI, 
-    ttl: 60 * 60 * 24 * 14            // session expiration: 14 days
+    ttl: 60 * 60 * 24 * 14            // 14 days
   }),
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 14, // cookie expiration: 14 days
-    httpOnly: true,                   // prevents client-side JS access
-    sameSite: "lax",                  // CSRF protection
-    secure: false,                    // set to true if using HTTPS
+    maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
+    httpOnly: true,                   // Prevents client-side JS access
+    // Production requires 'none' + secure for cross-origin tracking to work across Render & Vercel
+    sameSite: isProduction ? "none" : "lax", 
+    secure: isProduction,             // true enforces HTTPS in production
   },
 }));
 
 // ----------------------
 // Passport Authentication
 // ----------------------
-// - Passport handles user authentication
-// - Using passport-local-mongoose with User model
-
-//Take it from passport npm
 app.use(passport.initialize());
 app.use(passport.session());
 
-//take it from passport-local-mongoose
-passport.use(User.createStrategy());          // Local strategy for login/signup
-passport.serializeUser(User.serializeUser()); // Save user data in session
-passport.deserializeUser(User.deserializeUser()); // Retrieve user from session
+passport.use(User.createStrategy());          
+passport.serializeUser(User.serializeUser()); 
+passport.deserializeUser(User.deserializeUser()); 
 
 // ----------------------
 // Routes
 // ----------------------
-// All chat-related routes (/api/chat/...)
 app.use("/api", chatRoutes);
-
-// All user-related routes (/api/user/...)
 app.use("/api/user", userRoutes);
 
-
-
-// Default route (sanity check)
+// Default route
 app.get("/", (req, res) => {
   res.json(" Server is running");
 });
