@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "../components/AuthLayout";
 import { useAuth } from "../hooks/useAuth";
 
@@ -7,13 +7,12 @@ export default function Login() {
   const { formData, handleInputChange, handleSubmit, loading } = useAuth(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  const inputContainer = "relative flex items-center";
-  const iconStyle = "absolute left-4 text-slate-400";
-  const inputStyle = "w-full pl-12 pr-12 py-3 bg-[#1e293b]/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-white placeholder:text-slate-500";
+  const labelStyle = "block text-xs font-medium text-slate-400 mb-1.5";
+  const inputStyle = "w-full px-3 py-2 bg-[#131929] border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all";
 
   return (
     <AuthLayout
-      title="Log back in"
+      title="Sign in to your account"
       onSubmit={handleSubmit}
       loading={loading}
       linkText="Don't have an account?"
@@ -21,12 +20,12 @@ export default function Login() {
       linkTo="/signup"
     >
       <div className="space-y-4">
-        <div className={inputContainer}>
-          <Mail className={iconStyle} size={18} />
+        <div>
+          <label className={labelStyle}>Email address</label>
           <input
             name="email"
             type="email"
-            placeholder="Email address"
+            placeholder="you@example.com"
             required
             value={formData.email}
             onChange={handleInputChange}
@@ -34,24 +33,28 @@ export default function Login() {
           />
         </div>
 
-        <div className={inputContainer}>
-          <Lock className={iconStyle} size={18} />
-          <input
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            required
-            value={formData.password}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 text-gray-400 hover:text-gray-600"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
+        <div>
+          <div className="flex justify-between items-center mb-1.5">
+            <label className="text-xs font-medium text-slate-400">Password</label>
+          </div>
+          <div className="relative flex items-center">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              required
+              value={formData.password}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
       </div>
     </AuthLayout>

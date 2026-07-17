@@ -4,52 +4,65 @@ import { useAuth } from "../hooks/useAuth";
 export default function Signup() {
   const { formData, handleInputChange, handleSubmit, loading } = useAuth(false);
 
-  const inputStyle = "w-full px-4 py-2.5 bg-[#1e293b]/40 border border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-white placeholder-slate-500";
+  const labelStyle = "block text-xs font-medium text-slate-400 mb-1.5";
+  const inputStyle = "w-full px-3 py-2 bg-[#131929] border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all";
 
   return (
     <AuthLayout
-      title="Create Account"
+      title="Create your account"
       onSubmit={handleSubmit}
       loading={loading}
       linkText="Already have an account?"
       linkLabel="Log in"
       linkTo="/login"
     >
-      <div className="grid grid-cols-1 gap-4">
-        <input
-          name="username"
-          placeholder="Username"
-          required
-          value={formData.username}
-          onChange={handleInputChange}
-          className={inputStyle}
-        />
-        <input
-          name="email"
-          type="email"
-          placeholder="Email Address"
-          required
-          value={formData.email}
-          onChange={handleInputChange}
-          className={inputStyle}
-        />
-        <input
-          name="phno"
-          placeholder="Phone Number"
-          required
-          value={formData.phno}
-          onChange={handleInputChange}
-          className={inputStyle}
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Create Password"
-          required
-          value={formData.password}
-          onChange={handleInputChange}
-          className={inputStyle}
-        />
+      <div className="space-y-4">
+        <div>
+          <label className={labelStyle}>Username</label>
+          <input
+            name="username"
+            placeholder="johndoe"
+            required
+            value={formData.username}
+            onChange={handleInputChange}
+            className={inputStyle}
+          />
+        </div>
+        <div>
+          <label className={labelStyle}>Email Address</label>
+          <input
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            value={formData.email}
+            onChange={handleInputChange}
+            className={inputStyle}
+          />
+        </div>
+        <div>
+          <label className={labelStyle}>Phone Number</label>
+          <input
+            name="phno"
+            placeholder="+1 (555) 000-0000"
+            required
+            value={formData.phno}
+            onChange={handleInputChange}
+            className={inputStyle}
+          />
+        </div>
+        <div>
+          <label className={labelStyle}>Password</label>
+          <input
+            name="password"
+            type="password"
+            placeholder="Create a secure password"
+            required
+            value={formData.password}
+            onChange={handleInputChange}
+            className={inputStyle}
+          />
+        </div>
       </div>
     </AuthLayout>
   );

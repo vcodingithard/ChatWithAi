@@ -49,7 +49,7 @@ export function buildPublicUploadUrl(filePath) {
  * @param {string} folder - Cloudinary folder name
  * @returns {Promise<object>} Cloudinary upload result or a local fallback result
  */
-export async function uploadToCloudinary(localFilePath, folder = "dogpt", options = {}) {
+export async function uploadToCloudinary(localFilePath, folder = "convex_ai", options = {}) {
   const preserveLocalFileOnError = options.preserveLocalFileOnError !== false;
   const removeLocalFile = options.removeLocalFile === true;
   const safeFilePath = path.resolve(localFilePath);

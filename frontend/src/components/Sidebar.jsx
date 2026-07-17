@@ -31,11 +31,11 @@ const SidebarContent = () => {
             fontWeight: "bold",
             fontSize: "1.1rem"
           }}>
-            D
+            C
           </Box>
           <Box>
             <Typography variant="body1" fontWeight="700" sx={{ letterSpacing: "0.5px", fontSize: "0.95rem", bgGradient: "linear(to-r, white, rgba(255,255,255,0.7))" }}>
-              Dogpt Studio
+              Convex AI Studio
             </Typography>
             <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", display: "block", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "1px" }}>
               v2.1 Stable
@@ -159,7 +159,7 @@ const SidebarContent = () => {
             {user?.username || "Active Developer"}
           </Typography>
           <Typography variant="caption" noWrap sx={{ color: "rgba(255,255,255,0.45)", display: "block", fontSize: "0.7rem" }}>
-            {user?.email || "developer@dogpt.studio"}
+            {user?.email || "developer@convex.ai"}
           </Typography>
         </Box>
         <Box sx={{
