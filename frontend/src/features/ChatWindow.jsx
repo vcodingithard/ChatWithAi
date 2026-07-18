@@ -25,7 +25,7 @@ function ChatWindow() {
   
   // Destructure from global context
   const { 
-    promt, setPrompt, 
+    prompt, setPrompt, 
     setThreadId, 
     setCreateNewThread, 
     setNewChat, 
@@ -53,7 +53,7 @@ function ChatWindow() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const promptToSend = (promt || "").trim();
+    const promptToSend = (prompt || "").trim();
     if (!promptToSend && !selectedFile) return;
     
     setLoad(true);
@@ -175,7 +175,7 @@ function ChatWindow() {
           </Box>
 
           <ChatInput 
-            prompt={promt} 
+            prompt={prompt} 
             setPrompt={setPrompt} 
             onSubmit={handleSubmit} 
             loading={load} 

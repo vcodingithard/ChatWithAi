@@ -12,7 +12,7 @@ import Signup from "./pages/Signup";
 import Navbar from "./components/Navbar"; // New component for mobile toggle
 
 function App() {
-  const [promt, setPromt] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [threadId, setThreadId] = useState(uuidv4());
   const [prevChats, setPrevChats] = useState([]);
   const [allChats, setAllChats] = useState([]);
@@ -44,7 +44,7 @@ function App() {
 
   return (
     <MyContext.Provider value={{ 
-      promt, setPromt, 
+      prompt, setPrompt, 
       threadId, setThreadId, 
       prevChats, setPrevChats, 
       allChats, setAllChats, 
