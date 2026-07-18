@@ -51,10 +51,16 @@ app.use(cors({
     // Allow server-to-server requests or tools like Postman (no origin header)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                      origin.endsWith(".vercel.app") || 
+                      /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+                      /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      console.warn(`[CORS Blocked] Origin: ${origin}. Allowed origins:`, allowedOrigins);
+      callback(null, false); // Avoid passing Error, which triggers Express 500 Internal Server Error
     }
   },
   credentials: true, // Allows cookies/sessions to be shared
