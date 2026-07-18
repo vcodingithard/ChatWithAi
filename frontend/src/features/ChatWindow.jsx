@@ -68,7 +68,7 @@ function ChatWindow() {
         formData.append("selectedTool", selectedTool);
 
         await axios.post(
-          "http://localhost:3000/api/chat", 
+          getApiUrl("/api/chat"), 
           formData, 
           { 
             headers: { "Content-Type": "multipart/form-data" },
@@ -92,7 +92,7 @@ function ChatWindow() {
       } else {
         // Standard chat: Send JSON to /api/chat
         await axios.post(
-          "http://localhost:3000/api/chat", 
+          getApiUrl("/api/chat"), 
           { message: promptToSend, threadId, toolMode, selectedTool: "chat" }, 
           { withCredentials: true }
         );
