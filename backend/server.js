@@ -17,6 +17,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for secure cookies in production (e.g. Render, Vercel)
+app.set("trust proxy", 1);
+
 // ----------------------
 // Database Connection
 // ----------------------
